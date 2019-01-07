@@ -76,6 +76,10 @@ export default {
     canvas {
       width: 100% !important;
       height: auto !important;
+      max-width: 220px;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }
