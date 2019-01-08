@@ -1,11 +1,11 @@
 <template lang="pug">
 #home(:class="{'push-2': isEditingYourinfo}")
-  .overlay-close(@click="isShowAccounts = false", :class="{'is-active': isShowAccounts}")
+  .overlay-close(@click="$router.replace('/')", :class="{'is-active': isShowAccounts}")
   AccountsDisplay(:request="request", :userinfo="userinfo", :class="{'is-active': isShowAccounts, 'is-upside-down': isShowAccountsUpSideDown}")
   .container#request-container(:class="{'is-active': !isEditingYourinfo}")
     .username-row
       h3.username {{userinfo.name}}
-      button.small.not-important(@click="isEditingYourinfo = true") Edit
+      button.small.not-important(@click="$router.push('/editing')") Edit
     h2 Requesting
     form(@submit.prevent="attemptFormSubmit")
       .input
@@ -18,8 +18,8 @@
         input(type="text", maxlength="50", v-model="request.note", @focus="$event.target.select()")
         span.help-text {{request.note.length}}/50
       .submission.btn-inline
-        button(@click="isShowAccounts = true; isShowAccountsUpSideDown = true;") 💁‍♂️ For Show
-        button(@click="isShowAccounts = true; isShowAccountsUpSideDown = false;") 📷 For Screenshot
+        button(@click="navigateShow()") 💁‍♂️ For Show
+        button(@click="navigateScreenshot()") 📷 For Screenshot
   .container#yourinfo-container(:class="{'is-active': isEditingYourinfo}")
     h2 Your Info
     h3 PromptPay
@@ -49,8 +49,8 @@
         input(type="text", maxlength="50", v-model="secondary.info")
         span.help-text For example, branch name, branch ID.
     .btn-inline
-        button(v-if="isInit", @click="isEditingYourinfo = false; isInit = false") Start!
-        button(v-else, @click="isEditingYourinfo = false") ← Go Back
+        button(v-if="isInit", @click="isInit = false; $router.push('/')") Start!
+        button(v-else, @click="$router.push('/')") ← Go Back
 </template>
 
 <script>
@@ -94,9 +94,10 @@ export default {
       this.$set(this.userinfo, 'secondary', user.secondary);
     }
     if (this.userinfo.name === '' || this.userinfo.promptpay.id === '') {
-      this.isEditingYourinfo = true;
       this.isInit = true;
+      this.$route.push('/editing');
     }
+    this.routeHandler();
   },
   watch: {
     request: {
@@ -108,12 +109,44 @@ export default {
       handler() {
         window.localStorage.setItem('gm-userinfo', JSON.stringify(this.userinfo));
       }, deep: true
+    },
+    isEditingYourinfo() {
+      if (this.isEditingYourinfo) this.$router.push('/editing')
+      else this.$router.push('/')
+    },
+    $route() {
+      this.routeHandler();
     }
   },
   // { category: '', id: '', name: '', info: '' }
   methods: {
-    attemptFormSubmit () {
+    navigateShow() {
+      this.$router.push({
+        path: '/show'
+      })
+    },
+    navigateScreenshot() {
+      this.$router.push({
+        path: '/screenshot'
+      })
+    },
+    attemptFormSubmit() {
       document.activeElement.blur()
+    },
+    routeHandler() {
+      if (this.$route.path === '/') {
+        this.isEditingYourinfo = false;
+        this.isShowAccounts = false;
+      }
+      if (this.$route.path === '/editing') this.isEditingYourinfo = true;
+      if (this.$route.path === '/show') {
+        this.isShowAccounts = true;
+        this.isShowAccountsUpSideDown = true;
+      }
+      if (this.$route.path === '/screenshot') {
+        this.isShowAccounts = true;
+        this.isShowAccountsUpSideDown = false;
+      }
     }
   },
   components: {
