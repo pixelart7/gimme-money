@@ -1,6 +1,6 @@
 {
-  "name": "gimme-money",
-  "short_name": "Gimme Money",
+  "name": "Gimme!",
+  "short_name": "Gimme!",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
