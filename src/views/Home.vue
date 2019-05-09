@@ -80,72 +80,74 @@ export default {
       secondary: []
     }
   }),
-  created() {
+  created () {
     if (window.localStorage.getItem('gm-request') === null && window.localStorage.getItem('gm-userinfo') === null) {
-      window.localStorage.setItem('gm-request', JSON.stringify(this.request));
-      window.localStorage.setItem('gm-userinfo', JSON.stringify(this.userinfo));
+      window.localStorage.setItem('gm-request', JSON.stringify(this.request))
+      window.localStorage.setItem('gm-userinfo', JSON.stringify(this.userinfo))
     } else {
-      const req = JSON.parse(window.localStorage.getItem('gm-request'));
-      const user = JSON.parse(window.localStorage.getItem('gm-userinfo'));
-      this.$set(this.request, 'amount', req.amount);
-      this.$set(this.request, 'note', req.note);
-      this.$set(this.userinfo, 'name', user.name);
-      this.$set(this.userinfo.promptpay, 'id', user.promptpay.id);
-      this.$set(this.userinfo, 'secondary', user.secondary);
+      const req = JSON.parse(window.localStorage.getItem('gm-request'))
+      const user = JSON.parse(window.localStorage.getItem('gm-userinfo'))
+      this.$set(this.request, 'amount', req.amount)
+      this.$set(this.request, 'note', req.note)
+      this.$set(this.userinfo, 'name', user.name)
+      this.$set(this.userinfo.promptpay, 'id', user.promptpay.id)
+      this.$set(this.userinfo, 'secondary', user.secondary)
     }
     if (this.userinfo.name === '' || this.userinfo.promptpay.id === '') {
-      this.isInit = true;
-      this.$route.push('/editing');
+      this.isInit = true
+      this.$route.push('/editing')
     }
-    this.routeHandler();
+    this.routeHandler()
   },
   watch: {
     request: {
-      handler() {
-        window.localStorage.setItem('gm-request', JSON.stringify(this.request));
-      }, deep: true
+      handler () {
+        window.localStorage.setItem('gm-request', JSON.stringify(this.request))
+      },
+      deep: true
     },
     userinfo: {
-      handler() {
-        window.localStorage.setItem('gm-userinfo', JSON.stringify(this.userinfo));
-      }, deep: true
+      handler () {
+        window.localStorage.setItem('gm-userinfo', JSON.stringify(this.userinfo))
+      },
+      deep: true
     },
-    isEditingYourinfo() {
+    isEditingYourinfo () {
       if (this.isEditingYourinfo) this.$router.push('/editing')
       else this.$router.push('/')
     },
-    $route() {
-      this.routeHandler();
+    $route () {
+      this.routeHandler()
     }
   },
   // { category: '', id: '', name: '', info: '' }
   methods: {
-    navigateShow() {
+    navigateShow () {
       this.$router.push({
         path: '/show'
       })
     },
-    navigateScreenshot() {
+    navigateScreenshot () {
       this.$router.push({
         path: '/screenshot'
       })
     },
-    attemptFormSubmit() {
+    attemptFormSubmit () {
       document.activeElement.blur()
     },
-    routeHandler() {
+    routeHandler () {
       if (this.$route.path === '/') {
-        this.isEditingYourinfo = false;
-        this.isShowAccounts = false;
+        this.isEditingYourinfo = false
+        this.isShowAccounts = false
       }
-      if (this.$route.path === '/editing') this.isEditingYourinfo = true;
+      if (this.$route.path === '/editing') this.isEditingYourinfo = true
       if (this.$route.path === '/show') {
-        this.isShowAccounts = true;
-        this.isShowAccountsUpSideDown = true;
+        this.isShowAccounts = true
+        this.isShowAccountsUpSideDown = true
       }
       if (this.$route.path === '/screenshot') {
-        this.isShowAccounts = true;
-        this.isShowAccountsUpSideDown = false;
+        this.isShowAccounts = true
+        this.isShowAccountsUpSideDown = false
       }
     }
   },

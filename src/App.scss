@@ -1,0 +1,269 @@
+@import '~sanitize.css';
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700');
+@import '_variables.scss';
+
+* {
+  color: $subtle-black;
+  transition: all 0.15s;
+}
+
+.night-filter {
+  position: fixed;
+  z-index: 20;
+  background: rgba(#000000, 0.9);
+  top: 0; bottom: 0; left: 0; right: 0;
+  pointer-events: none;
+}
+
+textarea, select, input, button { outline: none; }
+
+textarea { resize: none; }
+
+h1, h2, h3, h4, h5, h6, button {
+  font-family: $branding-font;
+}
+
+.subtext {
+  color: $subtle-grey;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.branding-font {
+  font-family: $branding-font;
+}
+
+.container {
+  margin: 24px;
+  margin-top: 48px;
+  max-width: 420px;
+}
+
+button {
+  border: 2px solid $subtle-black;
+  background: #ffffff;
+  padding: 8px 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  &:hover {
+    background: darken(#ffffff, 4);
+  }
+  &.primary {
+    color: #2196F3;
+    border-color: #2196F3;
+  }
+  &.small {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 32px;
+  }
+  &.not-important {
+    color: $subtle-grey;
+    border-color: $subtle-grey;
+  }
+  &.is-toggled {
+    background: lighten($subtle-black, 4);
+    color: $subtle-white;
+  }
+  &.is-disabled {
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  &.block {
+    width: 100%;
+  }
+}
+
+.msg {
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 8px;
+  background: $subtle-grey;
+  font-family: $branding-font;
+  color: $subtle-white;
+  button {
+    margin-top: 8px;
+  }
+  &.warning {
+    background: $subtle-yellow;
+    color: darken($subtle-yellow, 50);
+  }
+}
+
+.bg {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(#fbff00, 0.75), transparent),
+    radial-gradient(circle at 0% 50%, rgba(#00ccff, 0.55), transparent),
+    radial-gradient(circle at 100% 50%, rgba(#2bff00, 0.55), transparent),
+    radial-gradient(circle at 50% 80%, transparent, rgba(#121212, 0.95));
+  background-size: 300% 300%;
+  transition: all 0.5s;
+  &.pos-1 {
+    background-position: left top;
+  }
+  &.pos-2 {
+    background-position: center center;
+  }
+  &.pos-3 {
+    background-position: right bottom;
+  }
+}
+
+.app-region {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+  // min-height: calc(100vh - 56px);
+  .bg {
+    flex: 1;
+    min-height: 56px;
+  }
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  a {
+    min-width: 56px;
+    height: 56px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(#fff, 0.65);
+    font-family: $branding-font;
+    svg {
+      margin: 0 8px;
+    }
+    svg path {
+      color: rgba(#fff, 0.65);
+    }
+  }
+}
+
+.page-region {
+  padding: 16px;
+}
+
+.fit-content {
+
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.mt-32 {
+  margin-top: 32px;
+}
+.mb-8 {
+  margin-bottom: 8px;
+}
+.mb-16 {
+  margin-bottom: 16px;
+}
+.mt-0 {
+  margin-top: 0;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  &.input-lg {
+    input {
+      font-size: 20px;
+    }
+    span {
+      font-size: 20px;
+    }
+  }
+  &.input-flex {
+    flex-direction: row;
+    align-items: center;
+    label {
+      flex: 1 1 128px;
+      margin-right: 12px;
+    }
+    input, .input-row {
+      flex: 1 1 196px;
+      width: 64px;
+    }
+  }
+  label {
+    font-family: $branding-font;
+    font-weight: 500;
+    font-size: 16px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    color: $subtle-grey;
+  }
+  input, textarea, select {
+    border: none;
+    border-bottom: 2px solid $subtle-black;
+    background: $subtle-white;
+    padding: 8px;
+    border-radius: 6px 6px 0 0;
+    &:focus {
+      background: darken($subtle-white, 4);
+    }
+    &.is-disabled {
+      color: $subtle-grey;
+      pointer-events: none;
+    }
+  }
+  select {
+    height: 36px;
+  }
+  input {
+    font-size: 16px;
+  }
+  span.help-text {
+    display: flex;
+    margin-top: 4px;
+    font-family: $branding-font;
+    justify-content: flex-end;
+    color: $subtle-grey;
+    font-size: 14px;
+    &.left {
+      justify-content: flex-start;
+    }
+  }
+  .input-row {
+    display: flex;
+    input {
+      margin: 0;
+      margin-right: 4px;
+    }
+    & > span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &.left {
+        margin-right: 0px;
+        border-bottom: 2px solid $subtle-black;
+        background: $subtle-white;
+        border-top-left-radius: 6px;
+        padding: 0 2px 0 8px;
+        color: $subtle-grey;
+        min-width: 28px;
+        & + input {
+          border-top-left-radius: 0;
+        }
+      }
+    }
+  }
+}
+
+.btn-inline {
+  margin-right: -8px;
+  margin-bottom: -8px;
+  button {
+    margin-right: 8px;
+    margin-bottom: 4px;
+  }
+}
