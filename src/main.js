@@ -1,4 +1,7 @@
 import Vue from 'vue'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faLock, faUser, faUserPlus, faUsers, faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 // import { faUser } from '@fortawesome/free-regular-svg-icons'
@@ -14,11 +17,26 @@ library.add(faLock, faGithub, faUser, faUserPlus, faUsers, faPencilAlt)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
+dayjs.extend(relativeTime)
+
+Vue.use({
+  install (V) {
+    V.prototype.$dayjs = dayjs
+  }
+})
+
 Vue.config.productionTip = false
+
+store.subscribe((mutation, state) => {
+  localStorage.setItem('vuex_store', JSON.stringify(state))
+})
 
 new Vue({
   router,
   store,
+  // beforeCreate () {
+  //   this.$store.commit('INIT_STORE')
+  // },
   render: h => h(App)
 }).$mount('#app')
 

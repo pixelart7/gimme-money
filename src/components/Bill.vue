@@ -2,8 +2,72 @@
 .bill-container(:class="{'is-editing': viewStatus === 'editing', 'is-new': viewStatus === 'new', 'is-view': viewStatus === 'simple' || viewStatus === 'detailed', 'is-simple': viewStatus === 'simple', 'is-detailed': viewStatus === 'detailed'}")
   .bill
     .view
-      .simple {{result}}
-      .detailed
+      .simple(@click="viewSimpleSectionClickHandler()")
+        .title
+          h4 {{bill.note}}
+          h4 {{bill.amount | moneyFilter}}
+        h5.date-subtext Created
+        h5.date {{$dayjs(bill.datetime.created).from($dayjs())}} ({{$dayjs(bill.datetime.created).format('MMM D, YYYY [at] HH:mm')}})
+      .detailed(v-if="Object.keys(result).length > 0")
+        hr
+        .horizontal-scroller
+          .card.actions(ref="card-action"): .card-inner
+            h3 Actions
+            hr
+            button(@click="$emit('viewChangeRequest', 'editing')") Edit
+            br
+            button(@click="$emit('viewChangeRequest', 'delete')") Delete
+          .card.summary(ref="card-summary"): .card-inner()
+            //- div {{result.people}}
+            .group-summary(v-for="(groupElm, i) in result.info.groupBasedPriority")
+              //- h5.group-name For People who joined:
+              //- div {{result.info.groupInfo}}
+              hr(v-if="i !== 0 && i !== result.info.groupBasedPriority.length")
+              .group-entries
+                span.group-entry-note(v-for="(entry, eI) in result.info.groupInfo[groupElm.group].entries")
+                  | {{entry.note}}
+                  template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1") &nbsp;+&nbsp;
+              .amount-sum
+                span.group-entry-each(v-for="(entry, eI) in result.info.groupInfo[groupElm.group].entries")
+                  | {{entry.amount | moneyFilter}}÷{{entry.people.length}}
+                  template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1") &nbsp;+&nbsp;     
+                span.sum &nbsp;=&nbsp;{{result.info.groupInfo[groupElm.group].amount | moneyFilter}}
+              .names
+                template(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
+                  .person-summary
+                    | {{bill.peopleNames[person.peopleKey] | nameFilter($store.state.userinfo.name)}}
+                  .pay-to(v-if="result.people[person.peopleKey].payTo.filter(elm => elm !== -1).length > 0")
+                    | Pay to
+                    |
+                    template(v-for="(payTo, paytoPeopleKey) in result.people[person.peopleKey].payTo")
+                      span(v-if="payTo !== -1")
+                        span.name {{bill.peopleNames[paytoPeopleKey] | nameFilter($store.state.userinfo.name)}}
+                        |
+                        | for
+                        |
+                        span.amount {{payTo | moneyFilter}}&nbsp;
+                  .pay-to.no-need-to-pay(v-else)
+                    | No need to pay (already paid)
+                .name-topic(v-if="result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] === '').length > 0")
+                  | The rest - {{result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] === '').length}} person(s)
+                template(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] === '')")
+                  .person-summary
+                  .pay-to(v-if="result.people[person.peopleKey].payTo.filter(elm => elm !== -1).length > 0")
+                    | Pay to
+                    |
+                    template(v-for="(payTo, paytoPeopleKey) in result.people[person.peopleKey].payTo")
+                      span(v-if="payTo !== -1")
+                        span.name {{bill.peopleNames[paytoPeopleKey] | nameFilter($store.state.userinfo.name)}}
+                        |
+                        | for
+                        |
+                        span.amount {{payTo | moneyFilter}}
+                        template(v-if="payTo !== result.people[person.peopleKey].payTo.filter(elm => elm !== -1).pop()") ,&nbsp;
+                        template(v-else) &nbsp;
+                    //- span each&nbsp;        
+                  .pay-to(v-else)
+                    | No need to pay (already paid)
+          .card-pusher
     .new-bill
       h3
         | New
@@ -54,24 +118,25 @@
             :peopleNamesArray="bill.peopleNames",
             :selected="process.peopleSelected",
             @updated="peopleChooserPayerUpdated")
-        h5.mt-32.mb-8(v-if="Object.keys(bill.payers).length > 0") How much?
-        .input.input-flex(v-for="amount, key in bill.payers", :key="key + '-paid-amount'")
+        h5.mt-32.mb-8(v-if="bill.payers.length > 0") How much?
+        .input.input-flex(v-for="(person, i) in bill.payers", :key="i + '-paid-amount'")
           label
-            | {{bill.peopleNames[key].replace('$', $store.state.userinfo.name)}}
-            small(v-if="bill.peopleNames[key].includes('$')")  (me)
+            | {{bill.peopleNames[person.person].replace('$', $store.state.userinfo.name)}}
+            small(v-if="bill.peopleNames[person.person].includes('$')")  (me)
             br
             small paid
           .input-row
             span.branding-font.left ฿
-            input(type="number", v-model.number="bill.payers[key]")
-            button(v-if="Object.keys(bill.payers).length === 1", style="flex-shrink: 0", @click="bill.payers[key] = bill.amount") All
-        //- .msg.warning(v-if="totalPaidSum() < bill.amount && Object.keys(bill.payers).length !== 0")
+            input(type="number", v-model.number="bill.payers[i].amount")
+            button(v-if="bill.payers.length === 1", style="flex-shrink: 0", @click="bill.payers[i].amount = bill.amount") All
+        //- .msg.warning(v-if="totalPaidSum() < bill.amount && bill.payers.length !== 0")
           | It looks like it doesn't add up to the amount that you paid to the store
-        .msg.warning(v-if="Object.keys(bill.payers).filter((elm) => bill.payers[elm] === 0).length > 0")
+        //- DEPRECRETED: .msg.warning(v-if="Object.keys(bill.payers).filter((elm) => bill.payers[elm] === 0).length > 0")
+        .msg.warning(v-if="bill.payers.filter((elm) => elm === 0).length > 0")
           | The list is intended only for people who paid to the store directly. Consider remove the people who didn't paid directly (paid 0).
           //- button Remove people who didn't paid to the store directly
       hr
-      .non-shared-menu(:class="{'is-disabled': process.people !== bill.numsOfPeople || totalPaidSum() < bill.amount || Object.keys(bill.payers).length === 0}")
+      .non-shared-menu
         h4.mb-0 Any menu that wasn't all shared?
         h5.subtext.mb-0 For example, drink that only some people drank, menu that only some people ate.
         h6.subtext (The price must already included in the total amount)
@@ -97,7 +162,9 @@
         p Summary
       hr
     .summary
-        button.block.mb-16(@click="saveAndClose()", v-if="process.people !== bill.numsOfPeople || totalPaidSum() < bill.amount || Object.keys(bill.payers).length === 0") Save
+        //(:class="{'is-disabled': process.people !== bill.numsOfPeople || totalPaidSum() < bill.amount || bill.payers.length === 0}")
+        .msg.mb-16(v-if="totalPaidSum() < bill.amount") Your total paid ({{totalPaidSum()}}) is still under the amount of the bill ({{bill.amount}})
+        button.block.mb-16(@click="saveAndClose()", v-if="process.people !== bill.numsOfPeople || totalPaidSum() < bill.amount || bill.payers.length === 0") Save
         button.block.mb-16.primary(@click="saveAndShow()", v-else) Save & Show Summary
 </template>
 
@@ -107,13 +174,39 @@ import Cal from '../calculator.js'
 
 export default {
   data: () => ({
-    result: {},
+    result: {
+      changeFromStore: [],
+      people: [],
+      info: {
+        groupBasedPriority: []
+      }
+    },
     process: {
       people: '',
       peopleSelected: []
-    },
+    }
   }),
+  filters: {
+    nameFilter (name, username) {
+      if (name === '$') return `${username} (device owner)`
+      return name
+    },
+    moneyFilter (amount) {
+      var text = amount.toString();
+      var index = text.indexOf(".");
+      const precision = (index == -1) ? 0 : (text.length - index - 1); // https://stackoverflow.com/a/53739569
+      if (precision > 3) return `฿${amount.toFixed(2)}`
+      else return `฿${amount}`
+    }
+  },
   created () {
+    // this.currentProcessHandler()
+    if (this.bill.numsOfPeople !== -1) { this.process.people = this.bill.numsOfPeople }
+    const ppSelected = []
+    this.bill.payers.forEach((elm) => {
+      ppSelected.push(elm.person)
+    })
+    this.process.peopleSelected = ppSelected
     this.updatePayer(this.process.peopleSelected)
   },
   watch: {
@@ -123,7 +216,6 @@ export default {
     bill: {
       handler () {
         if (Cal.validate(this.bill)) {
-          console.log(JSON.stringify(this.bill))
           this.result = Cal.calculate(this.bill)
         } else {
           this.result = {}
@@ -133,10 +225,26 @@ export default {
     }
   },
   methods: {
+    viewSimpleSectionClickHandler () {
+      if (this.viewStatus === 'simple') this.$emit('viewChangeRequest', 'detailed');
+      else this.$emit('viewChangeRequest', 'simple');
+    },
+    currentProcessHandler () {
+      if (this.bill.numsOfPeople !== -1) {
+        this.peopleSelected = this.bill.payers.map((elm) => elm.person)
+        this.people = this.bill.numsOfPeople
+        this.updatePayer(this.peopleSelected)
+      }
+    },
     viewChangedHandler () {
       if (this.viewStatus === 'simple' || this.viewStatus === 'detailed') {
         if (Cal.validate(this.bill)) { // validate passed
-          this.result = Cal.calculate(this.bill);
+          this.result = Cal.calculate(this.bill)
+        }
+        if (this.viewStatus === 'detailed') {
+          setTimeout(() => {
+            this.$refs['card-summary'].scrollIntoView({ behavior: 'smooth' })
+          }, 300)
         }
       }
     },
@@ -149,21 +257,31 @@ export default {
       // CLOSE
     },
     saveBill () {
-      console.log([].concat(this.$store.state.bills).concat([this.bill]));
-      console.log(JSON.stringify(this.bill));
-      this.$store.dispatch('updateBills', [].concat(this.$store.state.bills).concat([this.bill]))
-      console.log(JSON.stringify(this.$store.state.bills[this.$store.state.bills.length - 1]));
+      if (this.$vnode.key !== undefined) { // EXISTED ALREADY
+        const bills = this.$store.state.bills
+        bills[this.$vnode.key] = this.bill
+        this.$store.dispatch('updateBills', bills)
+        this.$emit('viewChangeRequest', 'reset');
+      } else {
+        this.$store.dispatch('updateBills', [].concat(this.$store.state.bills).concat([this.bill]))
+        this.$emit('viewChangeRequest', 'reset'); // WORKS ONLY ON NEW BILL
+      }
     },
     totalPaidSum () {
       let sum = 0
-      Object.keys(this.bill.payers).forEach((key) => {
-        if (sum !== undefined || sum !== '') sum += parseFloat(this.bill.payers[key])
+      this.bill.payers.forEach((elm, i) => {
+        sum += elm.amount
       })
+      // this.bill.payers.forEach((elm, i) => {
+      //   const key = elm.person
+      //   if (sum !== undefined || sum !== '') sum += parseFloat(this.bill.payers[key])
+      // })
       if (isNaN(sum)) sum = -1
       return sum
     },
     createNewBill () {
       if (this.bill.amount.toString().length === 0) return
+      this.bill.datetime.created = this.$dayjs()
       this.$emit('viewChangeRequest', 'editing')
       this.$forceUpdate()
       setTimeout(() => { // genius
@@ -185,13 +303,29 @@ export default {
       // this.bill.peopleNames = obj.peopleNames
     },
     updatePayer (selected) {
-      const newPayers = {}
+      const newPayers = []
       selected.forEach((key) => {
-        if (Object.keys(this.bill.payers).map(x => parseInt(x, 10)).indexOf(key) !== -1) {
-          newPayers[key] = this.bill.payers[key]
+        let indexAt = -1
+        this.bill.payers.forEach((elm, i) => {
+          if (key === elm.person) {
+            indexAt = i
+          }
+        })
+        if (indexAt === -1) {
+          newPayers.push({
+            person: key,
+            amount: ''
+          })
         } else {
-          newPayers[key] = ''
+          newPayers.push(this.bill.payers[indexAt])
         }
+        // // if selected's key has
+        // // DEPRECRETED: if (Object.keys(this.bill.payers).map(x => parseInt(x, 10)).indexOf(key) !== -1) {
+        // if (this.bill.payers.map(x => x.person).indexOf(key) !== -1) {
+        //   newPayers[key] = this.bill.payers[key]
+        // } else {
+        //   newPayers[key] = ''
+        // }
       })
       this.bill.payers = newPayers
     },
@@ -225,7 +359,21 @@ export default {
 <style lang="scss">
 @import '../_variables.scss';
 
+.bills-container {
+  .bill-container {
+    margin-bottom: 16px;
+    .bill {
+      box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
 .bill-container.is-view {
+  bottom: -24px;
+  .bill {
+    margin: 0;
+    width: 100%;
+  }
   .view { display: block; }
   .new-bill { display: none; }
   .summary { display: none; }
@@ -233,15 +381,136 @@ export default {
   .summary { display: none; }
   &.is-simple {
     .view .simple { display: block; }
-    .view .detailed { display: none; }
+    .view .detailed {
+      height: 0;
+      overflow-y: hidden;
+    }
   }
   &.is-detailed {
+    position: fixed;
+    z-index: 3;
+    top: 16px; right: 16px; left: 16px; bottom: 32px;
+    // height: calc(100vh - 32px);
+    .bill, .view {
+      height: 100%;
+      padding-bottom: 0;
+    }
+    .view {
+      display: flex;
+      flex-direction: column;
+      .detailed {
+        flex: 1;
+      }
+    }
     .view .simple { display: block; }
-    .view .detailed { display: block; }
+    .view .detailed {
+      // overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      .horizontal-scroller {
+        overflow-y: scroll;
+        position: absolute;
+        bottom: 0;
+        top: 32px;
+        left: -32px;
+        right: -32px;
+        flex: 1;
+        display: flex;
+        padding: 16px 24px;
+        padding-top: 4px;
+        scroll-snap-type: x mandatory;
+        .card {
+          scroll-snap-align: center;
+          flex-shrink: 0;
+          width: calc(100vw - 40px);
+          height: 100%;
+          display: inline-flex;
+          padding: 8px;
+          .card-inner {
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 2px 8px 2px rgba(#000000, 0.15);
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 20px 16px 16px 16px;
+            overflow-y: scroll;
+          }
+        }
+        .card-pusher {
+          flex-shrink: 0;
+          display: inline-flex;
+          width: 24px;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.bill .view {
+  .simple {
+    h4, h5 { margin: 0; }
+    h4 { margin-top: 8px; margin-bottom: 8px; }
+    h5.date-subtext {
+      margin-bottom: 0px;
+      font-weight: 400;
+      color: $subtle-grey;
+    }
+    h5.date {
+      margin-bottom: 4px;
+      font-weight: 400;
+    }
+    .title {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+  .detailed {
+    .group-summary {
+      margin-bottom: 12px;
+      .group-name {
+        margin: 0;
+        margin-bottom: 4px;
+        color: lighten($subtle-grey, 24);
+      }
+      .group-entries {
+        font-size: 14px;
+      }
+      .amount-sum {
+        font-size: 12px;
+        font-family: $branding-font;
+        margin-bottom: 4px;
+      }
+      .pay-to {
+        margin-bottom: 4px;
+        border-left: 2px solid lighten($subtle-grey, 24);
+        padding-left: 6px;
+        .name {
+          font-weight: 600;
+        }
+        .amount {
+          font-weight: 600;
+          font-size: 20px;
+        }
+      }
+      .person-summary, .name-topic {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .no-need-to-pay {
+        color: lighten($subtle-grey, 16);
+      }
+    }
   }
 }
 
 .bill-container.is-new {
+  .bill {
+    position: fixed;
+    bottom: 56px;
+    margin-top: 200vh;
+  }
   .view { display: none; }
   .new-bill { display: flex; }
   .summary { display: none; }
@@ -336,6 +605,15 @@ export default {
 }
 
 .bill-container {
+  hr {
+    border: none;
+    border-top: 2px dashed rgba(#000000, 0.15);
+    margin: 48px 0;
+    // box-shadow: 0 2px 8px 2px rgba(#000000, 0.1);
+  }
+  &.is-view {
+    hr { margin: 16px 0; }
+  }
   &.is-editing {
     position: fixed;
     z-index: 3;
@@ -347,12 +625,6 @@ export default {
         position: absolute;
         right: 0px;
         top: -88px;
-      }
-      hr {
-        border: none;
-        border-top: 2px dashed rgba(#000000, 0.15);
-        margin: 48px 0;
-        // box-shadow: 0 2px 8px 2px rgba(#000000, 0.1);
       }
     }
     .bill {

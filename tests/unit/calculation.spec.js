@@ -9,9 +9,9 @@ describe('Calculator', () => {
       peopleNames: ['$', 'Foo', '', '', ''],
       numsOfPeople: 5,
       datetime: '', // doesn't matter
-      payers: {
-        0: 500
-      },
+      payers: [
+        { person: 0, amount: 500 }
+      ],
       entries: []
     })
 
@@ -29,10 +29,10 @@ describe('Calculator', () => {
       peopleNames: ['$', 'Foo', '', '', ''],
       numsOfPeople: 5,
       datetime: '', // doesn't matter
-      payers: {
-        0: 500,
-        1: 500
-      },
+      payers: [
+        { person: 0, amount: 500 },
+        { person: 1, amount: 500 }
+      ],
       entries: []
     })
 
@@ -50,9 +50,9 @@ describe('Calculator', () => {
       peopleNames: ['$', 'Foo', '', '', ''],
       numsOfPeople: 5,
       datetime: '', // doesn't matter
-      payers: {
-        0: 500
-      },
+      payers: [
+        { person: 0, amount: 500 }
+      ],
       entries: []
     })
 
@@ -86,9 +86,9 @@ describe('Calculator', () => {
       peopleNames: ['$', 'Foo', 'Bar', '', ''], // 60, 160, 160, 60, 60
       numsOfPeople: 5,
       datetime: '', // doesn't matter
-      payers: {
-        0: 500
-      },
+      payers: [
+        { person: 0, amount: 500 }
+      ],
       entries: [{
         note: 'Menu 1, Foo eat with Bar',
         amount: 200,
@@ -126,10 +126,10 @@ describe('Calculator', () => {
       peopleNames: ['$', 'Foo', 'Bar', '', ''], // 60, 160, 160, 60, 60
       numsOfPeople: 5,
       datetime: '', // doesn't matter
-      payers: { // 300, 200
-        0: 300,
-        1: 200
-      }, // Get -> 240, 40, 0, 0, 0
+      payers: [ // 300, 200
+        { person: 0, amount: 300 },
+        { person: 1, amount: 200 }
+      ], // Get -> 240, 40, 0, 0, 0
       entries: [{
         note: 'Menu 1, Foo eat with Bar',
         amount: 200,

@@ -2,13 +2,17 @@ export default {
   validate (bill) {
     if (bill.numsOfPeople <= 0) return false
     if (bill.amount < 0) return false
-    if (Object.keys(bill.payers) <= 0) return false
+    if (bill.payers.length <= 0) return false
     return true
   },
   calculate (bill) {
     let result = {
       changeFromStore: [],
-      people: []
+      people: [],
+      info: {
+        groupBasedPriority: [],
+        groupInfo: {}
+      }
     }
 
     const each = (new Array(bill.numsOfPeople)).fill(0) // store amount of money that the person ate/joined
@@ -17,23 +21,54 @@ export default {
     each.forEach((e, i) => {
       result.changeFromStore[i] = -1
       result.people[i] = {
+        peopleKey: i, // for easy access when view
         payTo: (new Array(bill.numsOfPeople)).fill(-1),
-        getFrom: (new Array(bill.numsOfPeople)).fill(-1)
+        getFrom: (new Array(bill.numsOfPeople)).fill(-1),
+        group: '1'
       }
     })
+
+    // POPULATE MENU GROUP FOR EACH PEOPLE; index 0 always 1, the rest, entries participation
+    bill.entries.forEach((entry, i) => {
+      bill.peopleNames.forEach((name, pIndex) => {
+        if (entry.people.indexOf(pIndex) !== -1) {
+          result.people[pIndex].group = `${result.people[pIndex].group}1`
+        } else {
+          result.people[pIndex].group = `${result.people[pIndex].group}0`
+        }
+      })
+    })
+
+    // ASSIGN GROUP-BASED PRIORITY
+    let groupBasedPriorityTemp = {}
+    result.people.forEach((elm, i) => {
+      if (elm.group in groupBasedPriorityTemp) {
+        groupBasedPriorityTemp[elm.group] += 1
+      } else {
+        groupBasedPriorityTemp[elm.group] = 1
+      }
+    })
+    groupBasedPriorityTemp = Object.keys(groupBasedPriorityTemp).map((gKey) => {
+      return {
+        group: gKey,
+        amount: groupBasedPriorityTemp[gKey]
+      }
+    })
+    result.info.groupBasedPriority = groupBasedPriorityTemp.sort((a, b) => a.amount - b.amount)
 
     // CALCULATE CHANGE FROM STORE
     const realPaid = {}
     let tempAmountToCalculateChange = bill.amount
-    Object.keys(bill.payers).forEach((personKey) => { // calculate based from the first person
+    bill.payers.forEach((person, i) => { // calculate based from the first person
+      const personKey = person.person
       if (tempAmountToCalculateChange === 0) { // why did you pay when it's all add up omg
-        result.changeFromStore[personKey] = bill.payers[personKey]
-      } else if (tempAmountToCalculateChange - bill.payers[personKey] > 0) { // left over continue iterate
+        result.changeFromStore[personKey] = person.amount
+      } else if (tempAmountToCalculateChange - person.amount > 0) { // left over continue iterate
         result.changeFromStore[personKey] = 0
-        tempAmountToCalculateChange -= bill.payers[personKey]
-        realPaid[personKey] = bill.payers[personKey]
-      } else if (tempAmountToCalculateChange - bill.payers[personKey] <= 0) { // meaning that this person paid more than store needed
-        result.changeFromStore[personKey] = Math.abs(tempAmountToCalculateChange - bill.payers[personKey])
+        tempAmountToCalculateChange -= person.amount
+        realPaid[personKey] = person.amount
+      } else if (tempAmountToCalculateChange - person.amount <= 0) { // meaning that this person paid more than store needed
+        result.changeFromStore[personKey] = Math.abs(tempAmountToCalculateChange - person.amount)
         realPaid[personKey] = tempAmountToCalculateChange
         tempAmountToCalculateChange = 0
       }
@@ -49,6 +84,7 @@ export default {
     // CALCULATE AND ADD BASE PRICE FOR EACH
     const baseEach = amountWithoutSubmenu / bill.numsOfPeople
     each.forEach((elm, i) => {
+      if (elm !== 0) console.log('SUMTINGWONG')
       each[i] = elm + baseEach
     })
 
@@ -57,6 +93,23 @@ export default {
       const extraEach = entry.amount / entry.people.length
       entry.people.forEach((personKey) => {
         each[personKey] += extraEach
+      })
+    })
+
+    // SET GROUP PRICE AND MENUS FOR EACH GROUP
+    result.people.forEach((person, i) => {
+      if (person.group in result.info.groupInfo) return
+      result.info.groupInfo[person.group] = {
+        amount: each[i],
+        entries: [{
+          note: 'Shared Menu(s)',
+          amount: amountWithoutSubmenu,
+          people: [...bill.peopleNames.keys()]
+        }]
+      }
+      person.group.split('').slice(1).forEach((char, menuIndex) => {
+        if (char === '0') return
+        result.info.groupInfo[person.group].entries.push(bill.entries[menuIndex])
       })
     })
 
@@ -96,6 +149,8 @@ export default {
         }
       })
     })
+
+    // SUMMARY GENERATOR
 
     return result
   }
