@@ -17,6 +17,9 @@
             button(@click="$emit('viewChangeRequest', 'editing')") Edit
             br
             button(@click="$emit('viewChangeRequest', 'delete')") Delete
+            br
+            p Export to JSON
+            textarea(:value="JSON.stringify(bill)", style="width: 100%; height: 120px; border: 1px solid black")
           .card.summary(ref="card-summary"): .card-inner()
             //- div {{result.people}}
             .group-summary(v-for="(groupElm, i) in result.info.groupBasedPriority")
