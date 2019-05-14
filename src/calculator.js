@@ -1,8 +1,23 @@
 export default {
+  _sumEntries (bill) {
+    let sum = 0
+    bill.entries.forEach((elm) => {
+      sum += parseFloat(elm.amount)
+    })
+    return sum
+  },
+  _sumPaid (bill) {
+    let sum = 0
+    bill.payers.forEach((elm, i) => {
+      sum += parseFloat(elm.amount)
+    })
+    return sum
+  },
   validate (bill) {
-    if (bill.numsOfPeople <= 0) return false
+    if (bill.peopleNames.length <= 0) return false
     if (bill.amount < 0) return false
     if (bill.payers.length <= 0) return false
+    if (bill.amount > this._sumPaid(bill)) return false
     return true
   },
   calculate (bill) {
@@ -15,15 +30,15 @@ export default {
       }
     }
 
-    const each = (new Array(bill.numsOfPeople)).fill(0) // store amount of money that the person ate/joined
+    const each = (new Array(bill.peopleNames.length)).fill(0) // store amount of money that the person ate/joined
 
     // POPULATE RESULT OBJECT
     each.forEach((e, i) => {
       result.changeFromStore[i] = -1
       result.people[i] = {
         peopleKey: i, // for easy access when view
-        payTo: (new Array(bill.numsOfPeople)).fill(-1),
-        getFrom: (new Array(bill.numsOfPeople)).fill(-1),
+        payTo: (new Array(bill.peopleNames.length)).fill(-1),
+        getFrom: (new Array(bill.peopleNames.length)).fill(-1),
         group: '1'
       }
     })
@@ -82,7 +97,7 @@ export default {
     const amountWithoutSubmenu = bill.amount - subMenuSum
 
     // CALCULATE AND ADD BASE PRICE FOR EACH
-    const baseEach = amountWithoutSubmenu / bill.numsOfPeople
+    const baseEach = amountWithoutSubmenu / bill.peopleNames.length
     each.forEach((elm, i) => {
       if (elm !== 0) console.log('SUMTINGWONG')
       each[i] = elm + baseEach

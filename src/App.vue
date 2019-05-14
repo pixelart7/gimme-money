@@ -6,7 +6,7 @@
         a(href="https://github.com/pixelart7/gimme-money", target="_blank")
           font-awesome-icon(:icon="['fab', 'github']", size="2x")
     router-view
-    Navbar
+    Navbar(v-if="$route.name !== 'billNew' && $route.name !== 'billView' && $route.name !== 'billEdit'")
 </template>
 
 <script>
@@ -20,6 +20,7 @@ export default {
     bgChooser () {
       if (this.$route.name === 'split') this.bgClass = { 'pos-2': true }
       else if (this.$route.name === 'info') this.bgClass = { 'pos-3': true }
+      else if (this.$route.name === 'billNew') this.bgClass = { 'pos-4': true }
       else this.bgClass = {}
     }
   },

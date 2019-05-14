@@ -3,8 +3,8 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faLock, faUser, faUserPlus, faUsers, faPencilAlt } from '@fortawesome/free-solid-svg-icons'
-// import { faUser } from '@fortawesome/free-regular-svg-icons'
+import { faLock, faUser, faUserPlus, faUsers, faPencilAlt, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle, faSquare, faCheckSquare, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -13,7 +13,7 @@ import router from './router'
 import store from './store'
 import './registerServiceWorker'
 
-library.add(faLock, faGithub, faUser, faUserPlus, faUsers, faPencilAlt)
+library.add(faLock, faGithub, faUser, faUserPlus, faUsers, faPencilAlt, faTimesCircle, faSquare, faCheckSquare, faTrashAlt, faCheck)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
