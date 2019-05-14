@@ -136,6 +136,10 @@ export default {
       }
     },
     saveBill () {
+      this.bill.amount = parseFloat(this.bill.amount)
+      this.bill.entries.forEach((elm, i) => {
+        this.bill.entries[i].amount = parseFloat(this.bill.entries[i].amount)
+      })
       if (this.$route.name !== 'billNew') { // EXISTED ALREADY
         const bills = this.$store.state.bills
         bills[this.$vnode.key] = this.bill // maybe get from route

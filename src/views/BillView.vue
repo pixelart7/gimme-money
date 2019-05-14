@@ -23,7 +23,7 @@
               | Pay to
               |
               template(v-for="(payTo, paytoPeopleKey) in result.people[person.peopleKey].payTo")
-                span(v-if="payTo !== -1")
+                span.payment-each(v-if="payTo !== -1")
                   span.name {{bill.peopleNames[paytoPeopleKey] | name}}
                   |
                   | for
@@ -117,8 +117,10 @@ export default {
   },
   created () {
     this.bill = this.$store.getters.bills[this.$route.params.index]
+    console.log(this.bill)
     this.validationResult = Cal.validate(this.bill)
     if (this.validationResult) this.result = Cal.calculate(this.bill)
+    console.log(this.result)
   },
   methods: {
     groupEntriesNameRender (groupElm) {
@@ -245,6 +247,12 @@ export default {
           font-family: $branding-font;
           padding-left: 6px;
           min-height: 18px;
+          .payment-each::after {
+            content: ', ';
+          }
+          .payment-each:last-child::after {
+            content: '';
+          }
           .name, .amount {
             font-size: 16px;
             font-weight: 700;
