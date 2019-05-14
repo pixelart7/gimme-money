@@ -1,34 +1,20 @@
 <template lang="pug">
 #bill-view
+  AccountsDisplay(
+    @close="dialog.active = false",
+    :request="gimme",
+    :userinfo="myInfo",
+    :active="dialog.active"
+  )
   BillSmallDisplay(:bill="bill")
   hr.mt-0.mb-16
   template(v-if="validationResult")
     .by-group
       .group-summary(v-for="(groupElm, i) in result.info.groupBasedPriority")
         .group-entries
-          span.group-entry-note(
-            v-for="(entry, eI) in result.info.groupInfo[groupElm.group].entries",
-            v-if="eI !== 0 || result.info.groupInfo[groupElm.group].entries[0].amount !== 0"
-          )
-            | {{entry.note}}
-            template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1")
-              |
-              | +
-              |
+          span.group-entry-note {{groupEntriesNameRender(groupElm)}}
         .amount-sum
-          span.group-entry-each(
-            v-for="(entry, eI) in result.info.groupInfo[groupElm.group].entries",
-            v-if="eI !== 0 || result.info.groupInfo[groupElm.group].entries[0].amount !== 0"
-          )
-            | {{entry.amount | money}}÷{{entry.people.length}}
-            template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1")
-              |
-              | +
-              |
-          span.sum
-            |
-            | =
-            | {{result.info.groupInfo[groupElm.group].amount | money}}
+          span.group-entry-each {{groupEntriesAmountRender(groupElm)}}
         .names
           .one-person(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
             .person-summary
@@ -43,6 +29,11 @@
                   | for
                   |
                   span.amount {{payTo | money}}
+                  | &nbsp;
+                  button.btn-inline.small.not-important(
+                    v-if="bill.peopleNames[paytoPeopleKey] === '$'",
+                    @click="prepareShowQR($event, bill.peopleNames[person.peopleKey], bill.peopleNames[paytoPeopleKey], groupElm, payTo)"
+                  ) Show QR
             .pay-to.no-need-to-pay(v-else)
               | No need to pay (already paid)
   template(v-else)
@@ -70,9 +61,17 @@ import Cal from '@/calculator.js'
 import store from '@/store'
 
 import BillSmallDisplay from '@/components/BillSmallDisplay'
+import AccountsDisplay from '@/components/AccountsDisplay'
 
 export default {
   data: () => ({
+    dialog: {
+      active: false
+    },
+    gimme: {
+      amount: 0,
+      note: ''
+    },
     bill: {
       note: 'New Bill',
       amount: '',
@@ -93,6 +92,11 @@ export default {
     },
     validationResult: false
   }),
+  computed: {
+    myInfo () {
+      return this.$store.state.userinfo
+    }
+  },
   filters: {
     money (amount) {
       var text = amount.toString()
@@ -117,6 +121,40 @@ export default {
     if (this.validationResult) this.result = Cal.calculate(this.bill)
   },
   methods: {
+    groupEntriesNameRender (groupElm) {
+      let entries = this.result.info.groupInfo[groupElm.group].entries
+      entries = entries.filter((elm, i) => !(i === 0 && elm.amount === 0))
+      entries = entries.map((elm) => elm.note)
+      const notes = entries.join(' + ')
+      return notes
+    },
+    groupEntriesAmountRender (groupElm) {
+      let entries = this.result.info.groupInfo[groupElm.group].entries
+      entries = entries.filter((elm, i) => !(i === 0 && elm.amount === 0))
+      let result = ''
+      let sum = 0
+      entries.forEach((elm, i) => {
+        result += `${this.filterMoney(elm.amount)}÷${elm.people.length}`
+        if (i !== entries.length - 1) result += ' + '
+        sum += elm.amount / elm.people.length
+      })
+      result += ` = ${this.filterMoney(sum)}`
+      return result
+    },
+    filterMoney (amount) {
+      var text = amount.toString()
+      var index = text.indexOf('.')
+      const precision = (index == -1) ? 0 : (text.length - index - 1) // https://stackoverflow.com/a/53739569
+      if (precision > 3) return `฿${amount.toFixed(2)}`
+      else return `฿${amount}`
+    },
+    prepareShowQR ($event, name, payto, groupElm, amount) {
+      this.gimme = {
+        amount: parseFloat(amount.toString()).toFixed(2),
+        note: `${this.bill.note} - for ${name} (${this.groupEntriesNameRender(groupElm)})`
+      }
+      this.dialog.active = true;
+    },
     deleteThisBill () {
       if (confirm('Are you sure to delete this entry? This change cannot be undone!')) {
         const bills = this.$store.getters.bills
@@ -134,7 +172,8 @@ export default {
     }
   },
   components: {
-    BillSmallDisplay
+    BillSmallDisplay,
+    AccountsDisplay
   }
 }
 </script>

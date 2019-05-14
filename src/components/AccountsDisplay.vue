@@ -10,7 +10,7 @@
           | {{userinfo.name}}
         h2 ฿{{request.amount}}
       h4(v-if="request.note.length > 0") Note: {{request.note}}
-    Promptpay(:amount="request.amount", :id="userinfo.promptpay.id")
+    Promptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
 </template>
 
 <script>
