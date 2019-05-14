@@ -33,7 +33,7 @@
               .amount-sum
                 span.group-entry-each(v-for="(entry, eI) in result.info.groupInfo[groupElm.group].entries")
                   | {{entry.amount | moneyFilter}}÷{{entry.people.length}}
-                  template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1") &nbsp;+&nbsp;     
+                  template(v-if="eI < result.info.groupInfo[groupElm.group].entries.length - 1") &nbsp;+&nbsp;
                 span.sum &nbsp;=&nbsp;{{result.info.groupInfo[groupElm.group].amount | moneyFilter}}
               .names
                 template(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
@@ -67,7 +67,7 @@
                         span.amount {{payTo | moneyFilter}}
                         template(v-if="payTo !== result.people[person.peopleKey].payTo.filter(elm => elm !== -1).pop()") ,&nbsp;
                         template(v-else) &nbsp;
-                    //- span each&nbsp;        
+                    //- span each&nbsp;
                   .pay-to(v-else)
                     | No need to pay (already paid)
           .card-pusher
@@ -195,9 +195,9 @@ export default {
       return name
     },
     moneyFilter (amount) {
-      var text = amount.toString();
-      var index = text.indexOf(".");
-      const precision = (index == -1) ? 0 : (text.length - index - 1); // https://stackoverflow.com/a/53739569
+      var text = amount.toString()
+      var index = text.indexOf('.')
+      const precision = (index == -1) ? 0 : (text.length - index - 1) // https://stackoverflow.com/a/53739569
       if (precision > 3) return `฿${amount.toFixed(2)}`
       else return `฿${amount}`
     }
@@ -229,8 +229,8 @@ export default {
   },
   methods: {
     viewSimpleSectionClickHandler () {
-      if (this.viewStatus === 'simple') this.$emit('viewChangeRequest', 'detailed');
-      else this.$emit('viewChangeRequest', 'simple');
+      if (this.viewStatus === 'simple') this.$emit('viewChangeRequest', 'detailed')
+      else this.$emit('viewChangeRequest', 'simple')
     },
     currentProcessHandler () {
       if (this.bill.numsOfPeople !== -1) {
@@ -264,10 +264,10 @@ export default {
         const bills = this.$store.state.bills
         bills[this.$vnode.key] = this.bill
         this.$store.dispatch('updateBills', bills)
-        this.$emit('viewChangeRequest', 'reset');
+        this.$emit('viewChangeRequest', 'reset')
       } else {
         this.$store.dispatch('updateBills', [].concat(this.$store.state.bills).concat([this.bill]))
-        this.$emit('viewChangeRequest', 'reset'); // WORKS ONLY ON NEW BILL
+        this.$emit('viewChangeRequest', 'reset') // WORKS ONLY ON NEW BILL
       }
     },
     totalPaidSum () {
