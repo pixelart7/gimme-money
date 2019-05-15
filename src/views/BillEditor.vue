@@ -30,8 +30,8 @@
         @deleted="subMenuDeleted($event, i)"
       )
       button.block(@click="pushSubMenu()") + Add menu
-      h4.mt-32.mb-0.text-align-right.subtext Sum of the listed menu
-      h2.mt-0.mb-0.text-align-right = {{sumEntries() | money}}
+      //- h4.mt-32.mb-0.text-align-right.subtext Sum of the listed menu
+      //- h2.mt-0.mb-0.text-align-right = {{sumEntries() | money}}
     hr
     h3.mb-8 Bill Total
     .input
@@ -44,7 +44,7 @@
     .msg.mb-8(v-if="sumEntries() < bill.amount && bill.entries.length > 0")
       | The rest of the bill ({{bill.amount - sumEntries() | money}}) will be shared among everyone.
     .msg.warning.mb-8(v-if="sumEntries() > bill.amount")
-      | The total paid to store ({{bill.amount | money}}) is under the sum price of the menu ({{sumEntries() | money}}); this value should be equal or higher.
+      | The total paid to store ({{bill.amount | money}}) is under the sum price of the listed menu ({{sumEntries() | money}}); this value should be equal or higher.
     hr
     h3.mb-8 Payer(s)
     .input

@@ -11,10 +11,10 @@
   hr.mt-0.mb-16
   template(v-if="validationResult")
     .navigator
-      h4.mt-0 Jump to:
-      button(@click="scrollTo('.by-menu')") Menu Summary
-      button(@click="scrollTo('.scroll-point-for-by-payer')") Payer(s) & Change
-      button(@click="scrollTo('.scroll-point-for-by-group')") Separated by Group
+      h4.mt-0.mb-16 Jump to:
+      button.stealth.block.text-align-left(@click="scrollTo('.by-menu')") - Menu Summary
+      button.stealth.block.text-align-left(@click="scrollTo('.scroll-point-for-by-payer')") - Payer(s) & Change
+      button.stealth.block.text-align-left(@click="scrollTo('.scroll-point-for-by-group')") - Separated by Group
     //- .section-separator
     .by-menu
       h4.section-title 
