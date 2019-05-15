@@ -97,6 +97,9 @@ export default {
       datetime: {
         created: ''
       },
+      info: {
+        paidPeople: []
+      },
       payers: [],
       entries: []
     }

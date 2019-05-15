@@ -18,7 +18,7 @@
       .input
         label Note
         input.sub-menu-input(type="text", :value="entry.note", @input="inputNoteUpdated")
-      button.small.not-important.danger(@click="$emit('deleted')")
+      button.small.not-important.danger(@click="$emit('deleted')", tabindex="-1")
         font-awesome-icon(:icon="['far', 'trash-alt']")
         | &nbsp;Remove
     .input

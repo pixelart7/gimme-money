@@ -75,7 +75,7 @@
           span.group-entry-each {{groupEntriesAmountRender(groupElm)}}
         .names
           .one-person(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
-            .person-summary
+            .person-summary(@click="determineStateSet(person.peopleKey)")
               | {{bill.peopleNames[person.peopleKey] | name}}
             .pay-to(v-if="result.people[person.peopleKey].payTo.filter(elm => elm !== -1).length > 0")
               | Pay to
@@ -143,6 +143,9 @@ export default {
       datetime: {
         created: ''
       },
+      info: {
+        paidPeople: []
+      },
       payers: [],
       entries: []
     },
@@ -195,6 +198,9 @@ export default {
         sum += parseFloat(elm.amount)
       })
       return sum
+    },
+    determineStateSet (pKey) {
+      console.log(pKey)
     },
     groupEntriesNameRender (groupElm) {
       let entries = this.result.info.groupInfo[groupElm.group].entries
@@ -436,7 +442,8 @@ export default {
           font-size: 16px;
           font-weight: 700;
           font-family: $branding-font;
-          color: darken($branding-color, 8);
+          min-width: 48px;
+          // color: darken($branding-color, 8);
           border-bottom: 2px solid darken($subtle-white, 8);
           display: inline-block;
           padding: 4px 8px;
