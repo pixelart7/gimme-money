@@ -1,9 +1,10 @@
 <template lang="pug">
 #bill-editor.page-region.fit-content
-  .top-bar-title
+  .top-bar-title(style="opacity: 0.5;")
     h5 {{bill.note}}
     h6 {{bill.datetime.created | date}}
   .editor
+    button.close-btn.small.not-important(@click="discard()") Discard
     h3.mb-8 {{bill.note}}
     .input
       label Title / Note
@@ -24,21 +25,26 @@
         :key="'menu-entry-' + i",
         :peopleNames="bill.peopleNames",
         :entry="entry",
+        :initMode="process.menuEditorSize",
         @updated="subMenuUpdated($event, i)",
         @deleted="subMenuDeleted($event, i)"
       )
       button.block(@click="pushSubMenu()") + Add menu
+      h4.mt-32.mb-0.text-align-right.subtext Sum of the listed menu
+      h2.mt-0.mb-0.text-align-right = {{sumEntries() | money}}
     hr
-    h3.mb-8 Payment
+    h3.mb-8 Bill Total
     .input
-      label Total Amount Paid to Store
+      label 'Grand Total' in Bill
       .input-row
         span.branding-font.left ฿
         input(type="number", min=0, v-model="bill.amount")
         //- button.small(style="flex-shrink: 0", @click="bill.payers[i].amount = bill.amount") I entered all menus
       span.help-text.left Final price that was paid to the store. (ie. including all menus above, all-shared menus, VAT, taxes, service charge, etc.)
     .msg.mb-8(v-if="sumEntries() < bill.amount && bill.entries.length > 0")
-      | The rest of the bill (฿{{bill.amount - sumEntries()}}) will be shared among everyone.
+      | The rest of the bill ({{bill.amount - sumEntries() | money}}) will be shared among everyone.
+    .msg.warning.mb-8(v-if="sumEntries() > bill.amount")
+      | The total paid to store ({{bill.amount | money}}) is under the sum price of the menu ({{sumEntries() | money}}); this value should be equal or higher.
     hr
     h3.mb-8 Payer(s)
     .input
@@ -59,6 +65,8 @@
         span.branding-font.left ฿
         input(type="number", min=0, v-model.number="bill.payers[i].amount")
         button(v-if="bill.payers.length === 1", style="flex-shrink: 0", @click="bill.payers[i].amount = bill.amount") All
+    h4.mt-32.mb-0.text-align-right.subtext Paid to store
+    h2.mt-0.mb-0.text-align-right = {{sumPaid() | money}}
     hr
     .msg.warning.mb-8(v-if="sumPaid() < bill.amount && bill.payers.length > 0") Your total paid (฿{{sumPaid()}}) is under the amount of the bill (฿{{bill.amount}})
     .btn-flex
@@ -78,7 +86,8 @@ import MenuEditor from '@/components/MenuEditor'
 export default {
   data: () => ({
     process: {
-      payersSelected: []
+      payersSelected: [],
+      menuEditorSize: 'small'
     },
     bill: {
       note: 'New Bill',
@@ -94,8 +103,10 @@ export default {
   }),
   created () {
     if (this.$route.name === 'billNew') {
+      this.process.menuEditorSize = 'big'
       this.bill.datetime.created = this.$dayjs()
     } else { // Update payersSelected from stored data
+    this.process.menuEditorSize = 'small'
       this.bill = this.$store.getters.bills[this.$route.params.index]
       const ppSelected = []
       this.bill.payers.forEach((elm) => {
@@ -114,6 +125,13 @@ export default {
     name (name) {
       if (name === '$') return `${store.state.userinfo.name} (me)`
       return name
+    },
+    money (amount) {
+      var text = amount.toString()
+      var index = text.indexOf('.')
+      const precision = (index == -1) ? 0 : (text.length - index - 1) // https://stackoverflow.com/a/53739569
+      if (precision > 3) return `฿${amount.toFixed(2)}`
+      else return `฿${amount}`
     }
   },
   methods: {
@@ -153,6 +171,7 @@ export default {
       this.bill.entries.forEach((elm) => {
         sum += parseFloat(elm.amount)
       })
+      if (isNaN(sum)) return '?'
       return sum
     },
     sumPaid () {
@@ -160,6 +179,7 @@ export default {
       this.bill.payers.forEach((elm, i) => {
         sum += parseFloat(elm.amount)
       })
+      if (isNaN(sum)) return '?'
       return sum
     },
     selectAllIf ($event, text) {
@@ -229,6 +249,12 @@ export default {
 #bill-editor {
   position: relative;
   padding-bottom: 0;
+  z-index: 2;
+  .close-btn {
+    position: absolute;
+    right: 12px;
+    top: -42px;
+  }
   hr {
     border: none;
     border-top: 2px dashed rgba(#000000, 0.1);
@@ -236,6 +262,9 @@ export default {
   }
   .editor {
     padding-top: 4px;
+  }
+  .menus .is-big:only-of-type {
+    box-shadow: 0 2px 12px 0 rgba(#000000, 0.15);
   }
 }
 </style>

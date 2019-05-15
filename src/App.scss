@@ -107,7 +107,7 @@ button {
 .msg {
   font-size: 14px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 6px;
   background: $subtle-grey;
   font-family: $branding-font;
   color: $subtle-white;
@@ -230,6 +230,10 @@ button {
   margin-bottom: 0 !important;
 }
 
+.text-align-right {
+  text-align: right;
+}
+
 .input {
   display: flex;
   flex-direction: column;
@@ -333,6 +337,7 @@ button {
 .btn-flex {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 8px;
   button {
     margin-right: 8px;
     margin-bottom: 16px;

@@ -18,6 +18,9 @@ export default {
     if (bill.amount < 0) return false
     if (bill.payers.length <= 0) return false
     if (bill.amount > this._sumPaid(bill)) return false
+    if (bill.amount < this._sumEntries(bill)) return false
+    console.log(bill.amount)
+    console.log(this._sumEntries(bill))
     return true
   },
   calculate (bill) {
