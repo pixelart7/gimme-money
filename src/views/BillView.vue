@@ -332,6 +332,7 @@ export default {
     background: $subtle-white;
     border-radius: 6px;
     border: 1px solid lighten($subtle-grey, 42);
+    display: inline-block;
     & > span {
       margin-bottom: 8px;
       font-family: $branding-font;

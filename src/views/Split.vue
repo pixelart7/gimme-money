@@ -1,6 +1,10 @@
 <template lang="pug">
 #split.page-region.fit-content
   h2 Split The Bill
+  .msg.mb-8
+    | This feature is still in beta. Found a bug, or want to drop a suggestion?
+    | 
+    a(style="color: #ffffff" href="https://github.com/pixelart7/gimme-money/issues", target="_blank") Open Issue on Github
   .new-bill.mb-16: button.block(@click="$router.push({ name: 'billNew' })") 🧾 Add New Bill
   .bills-container
     router-link.bill-container(v-for="(bill, i) in $store.getters.bills", :to="'/bill/view/' + i")
