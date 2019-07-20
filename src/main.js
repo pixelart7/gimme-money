@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faLock, faUser, faUserPlus, faUsers, faPencilAlt, faCheck, faQrcode, faChevronUp, faChevronDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
@@ -18,6 +20,11 @@ library.add(faLock, faGithub, faUser, faUserPlus, faUsers, faPencilAlt, faTimesC
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 dayjs.extend(relativeTime)
+
+Sentry.init({
+  dsn: 'https://fa136f664b104ebdb5c20e9662e1950d@sentry.io/1509489',
+  integrations: [new Integrations.Vue({ Vue, attachProps: true })]
+})
 
 Vue.use({
   install (V) {
