@@ -6,7 +6,8 @@
         a(href="https://github.com/pixelart7/gimme-money", target="_blank")
           font-awesome-icon(:icon="['fab', 'github']", size="2x")
     router-view
-    Navbar(v-if="$route.name !== 'billNew' && $route.name !== 'billView' && $route.name !== 'billEdit'")
+    template(v-if="this.$store.state.userinfo.promptpay.id !== ''")
+      Navbar(v-if="$route.name !== 'billNew' && $route.name !== 'billView' && $route.name !== 'billEdit'")
 </template>
 
 <script>
@@ -30,6 +31,7 @@ export default {
   watch: {
     '$route' (to, from) {
       this.bgChooser()
+      if (this.$store.state.userinfo.promptpay.id === '' && this.$route.name !== 'info') this.$router.push({ name: 'info' })
     }
   },
   components: {
