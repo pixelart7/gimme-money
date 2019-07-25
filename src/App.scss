@@ -5,7 +5,6 @@
 * {
   color: $subtle-black;
   transition: all 0.15s;
-  font-family: sans-serif;
 }
 
 textarea, select, input, button { outline: none; }
@@ -14,9 +13,6 @@ textarea { resize: none; }
 
 h1, h2, h3, h4, h5, h6, button {
   font-family: $branding-font;
-  small {
-    font-family: inherit;
-  }
 }
 
 .subtext {
@@ -115,9 +111,6 @@ button {
   background: $subtle-grey;
   font-family: $branding-font;
   color: $subtle-white;
-  a {
-    font-family: inherit;
-  }
   button {
     margin-top: 8px;
   }
