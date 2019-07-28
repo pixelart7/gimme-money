@@ -25,7 +25,7 @@
         :key="'menu-entry-' + i",
         :peopleNames="bill.peopleNames",
         :entry="entry",
-        :initMode="process.menuEditorSize",
+        :initMode="determineEditorInitMode(i)",
         @updated="subMenuUpdated($event, i)",
         @deleted="subMenuDeleted($event, i)"
       )
@@ -138,6 +138,11 @@ export default {
     }
   },
   methods: {
+    determineEditorInitMode (i) {
+      if (i === this.bill.entries.length - 1) return 'big'
+      if (!isFinite(this.bill.entries[i].amount / this.bill.entries[i].numsOfPeople)) return 'big'
+      return process.menuEditorSize
+    },
     DEBUGSAVE () {
       const obj = JSON.parse('{"note":"2gether, May 3rd","amount":2154,"peopleNames": ["$","Art","Eynda","Son","P\'Mook","P\'Praew","P\'Turbo","Kong","Game","Anonymous","Mai"],"numsOfPeople":11,"datetime":{"created":"2019-05-12T11:17:21.672Z"},"payers":[{"person":0,"amount":2154}],"entries":[{"note":"1st pro","amount":414,"people":[0,1,2,3,4]},{"note":"2nd pro","amount":414,"people":[0,1,2,3,4,5,6,7,8,9,10]},{"note":"3rd pro","amount":414,"people":[0,1,2,3,4,5,6,7,8,9]},{"note":"4th pro","amount":414,"people":[0,1,2,3,4,5,6,7,8,9]},{"note":"Ice","amount":150,"people":[0,1,2,3,4,5,6,7,8,9,10]},{"note":"After Party","amount":348,"people":[0,1,2,3,4,6,7,8,9]}]}')
       this.$store.dispatch('updateBills', [].concat(this.$store.state.bills).concat([obj]))
