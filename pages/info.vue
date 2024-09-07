@@ -2,7 +2,7 @@
 #info.page-region.fit-content
   h2 Your Info
   .privacy-notice.branding-font
-    //- .icon: font-awesome-icon(icon="lock", size="xs") // TODO:
+    .icon: PhLockSimpleDuotone.text-sm
     p.m-0 All info are stored locally on your device.
   h3 PromptPay
   .input
@@ -16,6 +16,8 @@
 </template>
 
 <script setup lang="ts">
+import PhLockSimpleDuotone from '~icons/ph/lock-simple-duotone'
+
 const { store } = useStore()
 </script>
 

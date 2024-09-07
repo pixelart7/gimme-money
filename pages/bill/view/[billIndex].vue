@@ -21,7 +21,7 @@
         | Menu Summary
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          //- font-awesome-icon(icon="caret-up") // TODO:
+          PhCaretUpBold.inline
           |
           | top
       .section-title-pusher
@@ -48,7 +48,7 @@
         | Payer(s) & Change
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          //- font-awesome-icon(icon="caret-up") // TODO:
+          PhCaretUpBold.inline
           |
           | top
       .section-title-pusher
@@ -64,7 +64,7 @@
         | Separated by Group
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          //- font-awesome-icon(icon="caret-up") // TODO:
+          PhCaretUpBold.inline
           |
           | top
       .section-title-pusher
@@ -92,7 +92,7 @@
                   |
                   span.amount {{filterMoney(payTo)}}
                   span.qr-indicator(v-if="bill.peopleNames[paytoPeopleKey] === '$'")
-                    //- font-awesome-icon(icon="qrcode", size="sm") // TODO:
+                    PhQrCodeBold.inline
                   //- button.btn-inline.small.not-important(
                   //-   v-if="bill.peopleNames[paytoPeopleKey] === '$'",
                   //-   @click="prepareShowQR($event, bill.peopleNames[person.peopleKey], bill.peopleNames[paytoPeopleKey], groupElm, payTo)"
@@ -118,6 +118,9 @@
 </template>
 
 <script setup lang="ts">
+import PhCaretUpBold from '~icons/ph/caret-up-bold'
+import PhQrCodeBold from '~icons/ph/qr-code-bold'
+
 const dayjs = useDayjs()
 
 // Store

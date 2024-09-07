@@ -2,18 +2,18 @@
 .people-chooser
   .people-row(:class="{'is-name-editing': state.editing}")
     .people(v-for="(name, i) in peopleNamesArray", v-if="name !== ''", :class="{'is-editing': i === state.editingIndex}")
-      .icon(@click="toggle(i)", :class="{'is-active': selected.find(elm => elm === i) !== undefined}"): font-awesome-icon(icon="user", size="lg")
+      .icon(@click="toggle(i)", :class="{'is-active': selected.find(elm => elm === i) !== undefined}"): PhUserBold
       .name(v-if="name.substr(0, 1) === '$'", @click="toggleEdit(i)")
         | {{$store.state.userinfo.name}}
         br
         small
           | (me)
-          font-awesome-icon.edit-icon(icon="pencil-alt")
+          PhPencilDuotone
       .name(v-else, @click="toggleEdit(i)")
         | {{name}}
-        small: font-awesome-icon.edit-icon(icon="pencil-alt")
+        small: PhPencilDuotone
     .people.single-pull(v-if="peopleNamesArray.filter(elm => elm === '').length > 0")
-      .icon(@click="singlePullHandler()"): font-awesome-icon(icon="user-plus", size="lg")
+      .icon(@click="singlePullHandler()"): PhUserPlusBold.text-lg
       .name
         | From
         br
@@ -22,7 +22,7 @@
       .icon(
         @click="theRestHandler()",
         :class="{'is-active': shouldTheRestBeActive()}")
-        font-awesome-icon(icon="users", size="lg")
+        PhUsersBold.inline.text-lg
       .name
         | All remaining
         br
@@ -42,10 +42,15 @@
     button(@click="selectNone()") None
     .counter
       span {{selected.length}}
-      font-awesome-icon(icon="users")
+      PhUsersBold.inline
 </template>
 
 <script>
+import PhUsersBold from '~icons/ph/users-bold'
+import PhPencilDuotone from '~icons/ph/pencil-duotone'
+import PhUserBold from '~icons/ph/user-bold'
+import PhUserPlusBold from '~icons/ph/user-plus-bold'
+
 export default {
   data: () => ({
     state: {

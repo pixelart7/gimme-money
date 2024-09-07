@@ -1,8 +1,8 @@
 <template lang="pug">
 .promptpay
   .header: h3 PromptPay
-  ClientOnly
-    QRCodeVue.qrcode(:value="qrstring", size="420")
+  .flex.items-center.justify-center
+    QRCodeVue.qrcode(:value="qrstring", size="320")
   .footer
     h4.name {{this.id}}
     h4.amount ฿{{this.amount}}

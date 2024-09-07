@@ -19,7 +19,7 @@
         label Note
         input.sub-menu-input(type="text", :value="entry.note", @input="inputNoteUpdated")
       button.small.not-important.danger(@click="$emit('deleted')", tabindex="-1")
-        font-awesome-icon(:icon="['far', 'trash-alt']")
+        PhTrashBold.inline
         | &nbsp;Remove
     .input
       label Price
@@ -35,10 +35,10 @@
         @updated="peopleListSubMenuUpdated($event)")
   .control
     button.block.stealth.small(v-if="mode === 'small'", @click="mode = 'big'")
-      font-awesome-icon(icon="chevron-down")
+      PhCaretDownBold.inline
       //- | &nbsp;Expand to edit
     button.block.stealth.small(v-if="mode === 'big'", @click="mode = 'small'")
-      font-awesome-icon(icon="chevron-up")
+      PhCaretUpBold.inline
       //- | &nbsp;Collapse
     //- button.small(v-if="mode === 'small'", @click="mode = 'big'")
     //-   font-awesome-icon(icon="chevron-down")
@@ -49,6 +49,10 @@
 </template>
 
 <script setup lang="ts">
+import PhTrashBold from '~icons/ph/trash-bold'
+import PhCaretUpBold from '~icons/ph/caret-up-bold'
+import PhCaretDownBold from '~icons/ph/caret-down-bold'
+
 interface Entry {
   note: string;
   amount: string | number;

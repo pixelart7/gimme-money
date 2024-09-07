@@ -5,11 +5,11 @@
       .control(v-if="mode === 'edit' || mode === 'select'")
         .delete(v-if="mode === 'edit'")
           button.danger.stealth(tabindex="-1", @click="removePersonButtonClicked(pKey)", :class="{'is-disabled': peopleNames.length === 1}")
-            font-awesome-icon(:icon="['far', 'trash-alt']")
+            .flex.items-center.justify-center: PhTrashBold
         .tick(v-if="mode === 'select'")
           .psuedo-tick-box
-            font-awesome-icon.normal(:icon="['fas', 'check']", size="sm")
-            font-awesome-icon.active(:icon="['fas', 'check']", size="sm")
+            PhCheckBold.normal.text-sm
+            PhCheckBold.active.text-sm
       .name
         .edit(v-if="mode === 'edit'")
           input.person-list-input(
@@ -29,6 +29,9 @@
 </template>
 
 <script setup lang="ts">
+import PhTrashBold from '~icons/ph/trash-bold'
+import PhCheckBold from '~icons/ph/check-bold'
+
 interface Options {
   initMode?: 'view' | 'select';
   allowedModes?: ('view' | 'select')[];

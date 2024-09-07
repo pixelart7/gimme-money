@@ -10,7 +10,8 @@
           | {{userinfo?.name}}
         h2 ฿{{request.amount}}
       h4(v-if="request.note.length > 0") Note: {{request.note}}
-    ClientOnly: AccountsPromptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
+    ClientOnly
+      AccountsPromptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
 </template>
 
 <script setup>
@@ -48,9 +49,8 @@ defineProps({
 }
 
 .account-display {
-  width: 100%;
   max-height: calc(100vh - 64px);
-  overflow-y: scroll;
+  overflow-y: auto;
   max-width: 420px;
   position: fixed;
   z-index: 3;
