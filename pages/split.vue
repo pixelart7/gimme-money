@@ -1,7 +1,7 @@
 <template lang="pug">
 #split.page-region.fit-content
   h2.mb-8 Split The Bill
-  .new-bill.mb-16: button.block(@click="$router.push({ name: 'billNew' })") 🧾 Add New Bill
+  .new-bill.mb-16: button.block(@click="$router.push('/bill/new')") 🧾 Add New Bill
   .bills-container    
     NuxtLink.bill-container(v-for="(bill, i) in store.bills", :to="'/bill/view/' + i")
       BillSmallDisplay(:bill="bill")

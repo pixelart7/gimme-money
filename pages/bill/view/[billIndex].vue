@@ -30,18 +30,18 @@
           .name {{menu.note}}
           .people {{menu.people.map(pKey => filterName(bill.peopleNames[pKey])).join(', ')}}
         .amount
-          .sum {{moneyFilter(menu.amount)}}
-          .each ÷{{menu.people.length}} = {{moneyFilter(menu.amount / menu.people.length)}}
+          .sum {{filterMoney(menu.amount)}}
+          .each ÷{{menu.people.length}} = {{filterMoney(menu.amount / menu.people.length)}}
       .single-menu(v-if="sumEntries() < bill.amount")
         .menu-detail
           .name Shared Menu(s)
           .people everyone
         .amount
-          .sum {{moneyFilter(bill.amount - sumEntries())}}
-          .each ÷{{bill.peopleNames.length}} = {{(moneyFilter(bill.amount - sumEntries()) / bill.peopleNames.length)}}
+          .sum {{filterMoney(bill.amount - sumEntries())}}
+          .each ÷{{bill.peopleNames.length}} = {{(filterMoney((bill.amount - sumEntries()) / bill.peopleNames.length))}}
       .grand-total.mt-32
         h5.mb-0.text-align-right.subtext Grand Total
-        h3.m-0.text-align-right {{moneyFilter(bill.amount)}}
+        h3.m-0.text-align-right {{filterMoney(bill.amount)}}
     .section-separator.scroll-point-for-by-payer
     .by-payer
       h4.section-title
@@ -54,10 +54,10 @@
       .section-title-pusher
       .single-payer(v-for="payer in bill.payers")
         .payer-detail
-          .name {{nameFilter(bill.peopleNames[payer.person])}}
+          .name {{filterName(bill.peopleNames[payer.person])}}
         .amount
-          .paid Paid {{moneyFilter(payer.amount)}}
-          .change(:class="{'is-important': result.changeFromStore[payer.person] !== 0}") Change: {{moneyFilter(result.changeFromStore[payer.person])}}
+          .paid Paid {{filterMoney(payer.amount)}}
+          .change(:class="{'is-important': result.changeFromStore[payer.person] !== 0}") Change: {{filterMoney(result.changeFromStore[payer.person])}}
     .section-separator.scroll-point-for-by-group
     .by-group
       h4.section-title
@@ -76,7 +76,7 @@
         .names
           .one-person(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
             .person-summary(@click="determineStateSet(person.peopleKey)")
-              | {{nameFilter(bill.peopleNames[person.peopleKey])}}
+              | {{filterName(bill.peopleNames[person.peopleKey])}}
             .pay-to(v-if="result.people[person.peopleKey].payTo.filter(elm => elm !== -1).length > 0")
               | Pay to
               |
@@ -86,11 +86,11 @@
                   :class="{'qr-available': bill.peopleNames[paytoPeopleKey] === '$'}",
                   @click="determineShowQR($event, bill.peopleNames[person.peopleKey], bill.peopleNames[paytoPeopleKey], groupElm, payTo)"
                   )
-                  span.name {{nameFilter(bill.peopleNames[paytoPeopleKey])}}
+                  span.name {{filterName(bill.peopleNames[paytoPeopleKey])}}
                   |
                   | for
                   |
-                  span.amount {{moneyFilter(payTo)}}
+                  span.amount {{filterMoney(payTo)}}
                   span.qr-indicator(v-if="bill.peopleNames[paytoPeopleKey] === '$'")
                     //- font-awesome-icon(icon="qrcode", size="sm") // TODO:
                   //- button.btn-inline.small.not-important(
@@ -230,20 +230,6 @@ const deleteThisBill = () => {
 const navigateToEdit = () => {
   router.push({ path: `/bill/edit/${route.params.billIndex}` })
 }
-
-// Filters (now as functions)
-const moneyFilter = (amount: number) => {
-  return filterMoney(amount)
-}
-
-const nameFilter = (name: string) => {
-  return filterName(name)
-}
-
-// const dateFilter = (input: string | number | Date) => {
-//   const day = dayjs(input)
-//   return `${day.format('MMM D, YYYY [at] HH:mm')}`
-// }
 </script>
 
 <style lang="scss">
