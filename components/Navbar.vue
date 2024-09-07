@@ -13,8 +13,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../_variables.scss';
-
 .navbar {
   .pusher {
     height: 56px;
@@ -38,7 +36,7 @@ export default {
       text-align: center;
       width: 92px;
       height: 56px;
-      font-family: $branding-font;
+      font-family: 'Roboto Mono', monospace; // TODO:
       text-decoration: none;
       font-size: 12px;
       &.router-link-exact-active {

@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "dayjs-nuxt": "^2.1.11",
     "nuxt": "^3.13.0",
+    "promptpay-qr": "^0.5.0",
+    "qrcode.vue": "^3.4.1",
     "vue": "latest",
     "vue-router": "latest"
   },

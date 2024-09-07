@@ -1,33 +1,17 @@
 <template lang="pug">
 #split.page-region.fit-content
-  h2 Split The Bill
-  .msg.mb-8
-    | This feature is still in beta. Found a bug, or want to drop a suggestion?
-    | 
-    a(style="color: #ffffff" href="https://github.com/pixelart7/gimme-money/issues", target="_blank") Open Issue on Github
+  h2.mb-8 Split The Bill
   .new-bill.mb-16: button.block(@click="$router.push({ name: 'billNew' })") 🧾 Add New Bill
-  .bills-container
-    router-link.bill-container(v-for="(bill, i) in $store.getters.bills", :to="'/bill/view/' + i")
+  .bills-container    
+    NuxtLink.bill-container(v-for="(bill, i) in store.bills", :to="'/bill/view/' + i")
       BillSmallDisplay(:bill="bill")
 </template>
 
-<script>
-import BillSmallDisplay from '@/components/BillSmallDisplay'
-
-export default {
-  data: () => ({
-  }),
-  methods: {
-  },
-  components: {
-    BillSmallDisplay
-  }
-}
+<script setup lang="ts">
+const { store } = useStore()
 </script>
 
 <style lang="scss">
-@import '../_variables.scss';
-
 #split {
   position: relative;
   padding-bottom: 0;

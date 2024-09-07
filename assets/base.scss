@@ -1,6 +1,12 @@
-@import '~sanitize.css';
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700');
-@import '_variables.scss';
+
+$branding-font: 'Roboto Mono', monospace;
+$branding-color: #2196F3;
+$subtle-red: #c0392b;
+$subtle-black: #212121;
+$subtle-grey: #757575;
+$subtle-white: #fafafa;
+$subtle-yellow: #FFF176;
 
 * {
   color: $subtle-black;

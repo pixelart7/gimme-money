@@ -1,41 +1,26 @@
 <template lang="pug">
 .promptpay
   .header: h3 PromptPay
-  QRCodeVue.qrcode(:value="qrstring", size="420")
+  ClientOnly
+    QRCodeVue.qrcode(:value="qrstring", size="420")
   .footer
     h4.name {{this.id}}
     h4.amount ฿{{this.amount}}
 </template>
 
-<script>
+<script setup lang="ts">
 import QRPromptpay from 'promptpay-qr'
 import QRCodeVue from 'qrcode.vue'
 
-export default {
-  data: () => ({
-    qrstring: ''
-  }),
-  created () {
-    this.generateQRString()
-  },
-  watch: {
-    amount () {
-      this.generateQRString()
-    },
-    id () {
-      this.generateQRString()
-    }
-  },
-  methods: {
-    generateQRString () {
-      const qrstring = QRPromptpay(this.id, { amount: this.amount })
-      this.qrstring = qrstring
-    }
-  },
-  props: ['amount', 'id'],
-  components: {
-    QRCodeVue
-  }
+const props = defineProps(['amount', 'id'])
+let qrstring = ref('')
+
+watch(() => [props.amount, props.id], () => {
+  generateQRString()
+}, { immediate: true })
+
+function generateQRString() {
+  qrstring.value = QRPromptpay(props.id, { amount: props.amount })
 }
 </script>
 

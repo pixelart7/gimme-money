@@ -6,7 +6,7 @@
         .note {{entry.note}}
         p.people
           span.person(v-for="(pKey, i) in entry.people")
-            | {{peopleNames[pKey] | name}}
+            | {{filterName(peopleNames[pKey])}}
             template(v-if="i < entry.people.length - 1")
               | ,
               |
@@ -48,55 +48,60 @@
     //-   | &nbsp;Collapse
 </template>
 
-<script>
-import store from '@/store'
+<script setup lang="ts">
+interface Entry {
+  note: string;
+  amount: string | number;
+  people: number[];
+}
 
-import PeopleChooserVertical from '@/components/PeopleChooserVertical'
+interface Props {
+  peopleNames: string[];
+  entry: Entry;
+  initMode: 'small' | 'big';
+}
 
-export default {
-  data: () => ({
-    mode: 'small'
-  }),
-  filters: {
-    name (name) {
-      if (name === '$') return `${store.state.userinfo.name} (me)`
-      return name
-    }
-  },
-  created () {
-    this.mode = this.initMode
-  },
-  methods: {
-    inputNoteUpdated ($event) {
-      const newEntry = this.entry
-      newEntry.note = $event.target.value
-      this.$emit('updated', newEntry)
-    },
-    inputAmountUpdated ($event) {
-      const newEntry = this.entry
-      newEntry.amount = $event.target.value
-      this.$emit('updated', newEntry)
-    },
-    peopleListSubMenuUpdated (eventObj) {
-      const newEntry = this.entry
-      newEntry.people = eventObj.selected
-      this.$emit('updated', newEntry)
-    }
-  },
-  props: ['peopleNames', 'entry', 'initMode'],
-  components: {
-    PeopleChooserVertical
-  }
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'updated', entry: Entry): void
+}>()
+
+const { store } = useStore()
+
+const mode = ref<'small' | 'big'>('small')
+
+onMounted(() => {
+  mode.value = props.initMode
+})
+
+function filterName(name: string) {
+  if (name === '$') return `${store.value.userinfo.name} (me)`
+  return name
+}
+
+const inputNoteUpdated = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const newEntry = { ...props.entry, note: target.value }
+  emit('updated', newEntry)
+}
+
+const inputAmountUpdated = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const newEntry = { ...props.entry, amount: target.value }
+  emit('updated', newEntry)
+}
+
+const peopleListSubMenuUpdated = (eventObj: { selected: number[] }) => {
+  const newEntry = { ...props.entry, people: eventObj.selected }
+  emit('updated', newEntry)
 }
 </script>
 
 <style lang="scss">
-@import '../_variables.scss';
-
 .menu {
   padding: 8px;
   border-radius: 6px;
-  border: 1px solid darken($subtle-white, 8);
+  border: 1px solid darken(#fafafa, 8);
   margin-bottom: 8px;
   .menu-title {
     display: flex;
@@ -123,7 +128,7 @@ export default {
   }
   & > .control {
     text-align: right;
-    border-top: 1px solid darken($subtle-white, 8);
+    border-top: 1px solid darken(#fafafa, 8);
     padding-top: 8px;
   }
 }

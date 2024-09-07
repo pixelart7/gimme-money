@@ -1,12 +1,12 @@
 <template lang="pug">
 #bill-view
   AccountsDisplay(
-    @close="dialog.active = false",
-    :request="gimme",
-    :userinfo="myInfo",
+    @close="dialog.active = false"
+    :request="gimme"
+    :userinfo="store.userinfo"
     :active="dialog.active"
   )
-  button.close-btn.small.not-important(@click="$router.go(-1)") Close
+  button.close-btn.small.not-important(@click="router.go(-1)") Close
   BillSmallDisplay(:bill="bill")
   hr.mt-0.mb-16
   template(v-if="validationResult")
@@ -21,7 +21,7 @@
         | Menu Summary
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          font-awesome-icon(icon="caret-up")
+          //- font-awesome-icon(icon="caret-up") // TODO:
           |
           | top
       .section-title-pusher
@@ -30,41 +30,41 @@
           .name {{menu.note}}
           .people {{menu.people.map(pKey => filterName(bill.peopleNames[pKey])).join(', ')}}
         .amount
-          .sum {{menu.amount | money}}
-          .each ÷{{menu.people.length}} = {{menu.amount / menu.people.length | money}}
+          .sum {{moneyFilter(menu.amount)}}
+          .each ÷{{menu.people.length}} = {{moneyFilter(menu.amount / menu.people.length)}}
       .single-menu(v-if="sumEntries() < bill.amount")
         .menu-detail
           .name Shared Menu(s)
           .people everyone
         .amount
-          .sum {{bill.amount - sumEntries() | money}}
-          .each ÷{{bill.peopleNames.length}} = {{(bill.amount - sumEntries()) / bill.peopleNames.length | money}}
+          .sum {{moneyFilter(bill.amount - sumEntries())}}
+          .each ÷{{bill.peopleNames.length}} = {{(moneyFilter(bill.amount - sumEntries()) / bill.peopleNames.length)}}
       .grand-total.mt-32
         h5.mb-0.text-align-right.subtext Grand Total
-        h3.m-0.text-align-right {{bill.amount | money}}
+        h3.m-0.text-align-right {{moneyFilter(bill.amount)}}
     .section-separator.scroll-point-for-by-payer
     .by-payer
       h4.section-title
         | Payer(s) & Change
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          font-awesome-icon(icon="caret-up")
+          //- font-awesome-icon(icon="caret-up") // TODO:
           |
           | top
       .section-title-pusher
       .single-payer(v-for="payer in bill.payers")
         .payer-detail
-          .name {{bill.peopleNames[payer.person] | name}}
+          .name {{nameFilter(bill.peopleNames[payer.person])}}
         .amount
-          .paid Paid {{payer.amount | money}}
-          .change(:class="{'is-important': result.changeFromStore[payer.person] !== 0}") Change: {{result.changeFromStore[payer.person] | money}}
+          .paid Paid {{moneyFilter(payer.amount)}}
+          .change(:class="{'is-important': result.changeFromStore[payer.person] !== 0}") Change: {{moneyFilter(result.changeFromStore[payer.person])}}
     .section-separator.scroll-point-for-by-group
     .by-group
       h4.section-title
         | Separated by Group
         | 
         button.small.not-important.stealth(@click="scrollTo('body')")
-          font-awesome-icon(icon="caret-up")
+          //- font-awesome-icon(icon="caret-up") // TODO:
           |
           | top
       .section-title-pusher
@@ -76,7 +76,7 @@
         .names
           .one-person(v-for="person in result.people.filter((person) => person.group === groupElm.group && bill.peopleNames[person.peopleKey] !== '')")
             .person-summary(@click="determineStateSet(person.peopleKey)")
-              | {{bill.peopleNames[person.peopleKey] | name}}
+              | {{nameFilter(bill.peopleNames[person.peopleKey])}}
             .pay-to(v-if="result.people[person.peopleKey].payTo.filter(elm => elm !== -1).length > 0")
               | Pay to
               |
@@ -86,13 +86,13 @@
                   :class="{'qr-available': bill.peopleNames[paytoPeopleKey] === '$'}",
                   @click="determineShowQR($event, bill.peopleNames[person.peopleKey], bill.peopleNames[paytoPeopleKey], groupElm, payTo)"
                   )
-                  span.name {{bill.peopleNames[paytoPeopleKey] | name}}
+                  span.name {{nameFilter(bill.peopleNames[paytoPeopleKey])}}
                   |
                   | for
                   |
-                  span.amount {{payTo | money}}
+                  span.amount {{moneyFilter(payTo)}}
                   span.qr-indicator(v-if="bill.peopleNames[paytoPeopleKey] === '$'")
-                    font-awesome-icon(icon="qrcode", size="sm")
+                    //- font-awesome-icon(icon="qrcode", size="sm") // TODO:
                   //- button.btn-inline.small.not-important(
                   //-   v-if="bill.peopleNames[paytoPeopleKey] === '$'",
                   //-   @click="prepareShowQR($event, bill.peopleNames[person.peopleKey], bill.peopleNames[paytoPeopleKey], groupElm, payTo)"
@@ -117,158 +117,136 @@
       button.block.primary(@click="$router.push({name: 'split'})") Close
 </template>
 
-<script>
-import dayjs from 'dayjs'
-import Cal from '@/calculator.js'
+<script setup lang="ts">
+const dayjs = useDayjs()
 
-import store from '@/store'
+// Store
+const { store } = useStore()
+const route = useRoute()
+const router = useRouter()
 
-import BillSmallDisplay from '@/components/BillSmallDisplay'
-import AccountsDisplay from '@/components/AccountsDisplay'
+const { validate, calculate } = useGimmeCalculator()
 
-export default {
-  data: () => ({
-    dialog: {
-      active: false
-    },
-    gimme: {
-      amount: 0,
-      note: ''
-    },
-    bill: {
-      note: 'New Bill',
-      amount: '',
-      peopleNames: ['$'],
-      numsOfPeople: -1,
-      datetime: {
-        created: ''
-      },
-      info: {
-        paidPeople: []
-      },
-      payers: [],
-      entries: []
-    },
-    result: {
-      changeFromStore: [],
-      people: [],
-      info: {
-        groupBasedPriority: []
-      }
-    },
-    validationResult: false
-  }),
-  computed: {
-    myInfo () {
-      return this.$store.state.userinfo
-    }
-  },
-  filters: {
-    money (amount) {
-      var text = amount.toString()
-      var index = text.indexOf('.')
-      const precision = (index == -1) ? 0 : (text.length - index - 1) // https://stackoverflow.com/a/53739569
-      if (precision > 3) return `฿${amount.toFixed(2)}`
-      else return `฿${amount}`
-    },
-    name (name) {
-      if (name === '$') return `${store.state.userinfo.name} (me)`
-      return name
-    },
-    date (input) {
-      const day = dayjs(input)
-      // return `${dayjs(input).from(dayjs())} (${dayjs(input).format('MMM D, YYYY [at] HH:mm')})`
-      return `${dayjs(input).format('MMM D, YYYY [at] HH:mm')}`
-    }
-  },
-  created () {
-    this.bill = this.$store.getters.bills[this.$route.params.index]
-    console.log(this.bill)
-    this.validationResult = Cal.validate(this.bill)
-    if (this.validationResult) this.result = Cal.calculate(this.bill)
-    console.log(this.result)
-  },
-  methods: {
-    scrollTo (query) {
-      document.querySelector(query).scrollIntoView({ behavior: 'smooth' })
-    },
-    sumEntries () {
-      let sum = 0
-      this.bill.entries.forEach((elm) => {
-        sum += parseFloat(elm.amount)
-      })
-      return sum
-    },
-    determineStateSet (pKey) {
-      console.log(pKey)
-    },
-    groupEntriesNameRender (groupElm) {
-      let entries = this.result.info.groupInfo[groupElm.group].entries
-      entries = entries.filter((elm, i) => !(i === 0 && elm.amount === 0))
-      entries = entries.map((elm) => elm.note)
-      const notes = entries.join(' + ')
-      return notes
-    },
-    groupEntriesAmountRender (groupElm) {
-      let entries = this.result.info.groupInfo[groupElm.group].entries
-      entries = entries.filter((elm, i) => !(i === 0 && elm.amount === 0))
-      let result = ''
-      let sum = 0
-      entries.forEach((elm, i) => {
-        result += `${this.filterMoney(elm.amount)}÷${elm.people.length}`
-        if (i !== entries.length - 1) result += ' + '
-        sum += elm.amount / elm.people.length
-      })
-      result += ` = ${this.filterMoney(sum)}`
-      return result
-    },
-    filterMoney (amount) {
-      var text = amount.toString()
-      var index = text.indexOf('.')
-      const precision = (index == -1) ? 0 : (text.length - index - 1) // https://stackoverflow.com/a/53739569
-      if (precision > 3) return `฿${amount.toFixed(2)}`
-      else return `฿${amount}`
-    },
-    filterName (name) {
-      if (name === '$') return `${store.state.userinfo.name} (me)`
-      return name
-    },
-    determineShowQR ($event, name, payto, groupElm, amount) {
-      if (payto === '$') this.prepareShowQR($event, name, payto, groupElm, amount)
-    },
-    prepareShowQR ($event, name, payto, groupElm, amount) {
-      this.gimme = {
-        amount: parseFloat(amount.toString()).toFixed(2),
-        note: `${this.bill.note} - for ${name} (${this.groupEntriesNameRender(groupElm)})`
-      }
-      this.dialog.active = true;
-    },
-    deleteThisBill () {
-      if (confirm('Are you sure to delete this entry? This change cannot be undone!')) {
-        const bills = this.$store.getters.bills
-        bills.splice(this.$route.params.index, 1)
-        this.$store.dispatch('updateBills', bills)
-        this.$router.replace({
-          path: '/split'
-        })
-      }
-    },
-    navigateToEdit () {
-      this.$router.push({
-        path: `/bill/edit/${this.$route.params.index}`
-      })
-    }
-  },
-  components: {
-    BillSmallDisplay,
-    AccountsDisplay
+// Data
+const dialog = ref({ active: false })
+const gimme = ref({ amount: 0, note: '' })
+
+const bill = ref({
+  note: 'New Bill',
+  amount: '',
+  peopleNames: ['$'],
+  numsOfPeople: -1,
+  datetime: { created: '' },
+  info: { paidPeople: [] },
+  payers: [],
+  entries: []
+})
+
+const result = ref({
+  changeFromStore: [],
+  people: [],
+  info: { groupBasedPriority: [] }
+})
+
+const validationResult = ref(false)
+
+// Lifecycle hooks
+onMounted(() => {
+  bill.value = store.value.bills[Number(route.params.billIndex)]
+  console.log(bill.value)
+  validationResult.value = validate(bill.value)
+  if (validationResult.value) result.value = calculate(bill.value)
+  console.log(result.value)
+})
+
+// Methods
+const scrollTo = (query: string) => {
+  document.querySelector(query)?.scrollIntoView({ behavior: 'smooth' })
+}
+
+const sumEntries = () => {
+  return bill.value.entries.reduce((sum, entry) => sum + parseFloat(entry.amount), 0)
+}
+
+const determineStateSet = (pKey: string) => {
+  console.log(pKey)
+}
+
+const groupEntriesNameRender = (groupElm: any) => {
+  let entries = result.value.info.groupInfo[groupElm.group].entries
+  entries = entries.filter((elm: any, i: number) => !(i === 0 && elm.amount === 0))
+  entries = entries.map((elm: any) => elm.note)
+  return entries.join(' + ')
+}
+
+const groupEntriesAmountRender = (groupElm: any) => {
+  let entries = result.value.info.groupInfo[groupElm.group].entries
+  entries = entries.filter((elm: any, i: number) => !(i === 0 && elm.amount === 0))
+  let resultStr = ''
+  let sum = 0
+  entries.forEach((elm: any, i: number) => {
+    resultStr += `${filterMoney(elm.amount)}÷${elm.people.length}`
+    if (i !== entries.length - 1) resultStr += ' + '
+    sum += elm.amount / elm.people.length
+  })
+  resultStr += ` = ${filterMoney(sum)}`
+  return resultStr
+}
+
+const filterMoney = (amount: number) => {
+  const text = amount.toString()
+  const index = text.indexOf('.')
+  const precision = (index == -1) ? 0 : (text.length - index - 1)
+  if (precision > 3) return `฿${amount.toFixed(2)}`
+  else return `฿${amount}`
+}
+
+const filterName = (name: string) => {
+  if (name === '$') return `${store.value.userinfo.name} (me)`
+  return name
+}
+
+const determineShowQR = ($event: Event, name: string, payto: string, groupElm: any, amount: number) => {
+  if (payto === '$') prepareShowQR($event, name, payto, groupElm, amount)
+}
+
+const prepareShowQR = ($event: Event, name: string, payto: string, groupElm: any, amount: number) => {
+  gimme.value = {
+    amount: parseFloat(amount.toString()).toFixed(2),
+    note: `${bill.value.note} - for ${name} (${groupEntriesNameRender(groupElm)})`
+  }
+  dialog.value.active = true
+}
+
+const deleteThisBill = () => {
+  if (confirm('Are you sure to delete this entry? This change cannot be undone!')) {
+    const bills = store.value.bills
+    bills.splice(Number(route.params.billIndex), 1)
+    store.value.bills = [...bills]
+    router.replace({ path: '/split' })
   }
 }
+
+const navigateToEdit = () => {
+  router.push({ path: `/bill/edit/${route.params.billIndex}` })
+}
+
+// Filters (now as functions)
+const moneyFilter = (amount: number) => {
+  return filterMoney(amount)
+}
+
+const nameFilter = (name: string) => {
+  return filterName(name)
+}
+
+// const dateFilter = (input: string | number | Date) => {
+//   const day = dayjs(input)
+//   return `${day.format('MMM D, YYYY [at] HH:mm')}`
+// }
 </script>
 
 <style lang="scss">
-@import '../_variables.scss';
-
 #bill-view {
   position: relative;
   z-index: 2;
@@ -283,14 +261,14 @@ export default {
   .insuff-data {
     padding: 16px;
     font-size: 14px;
-    color: $subtle-grey;
-    font-family: $branding-font;
+    color: #757575;
+    font-family: 'Roboto Mono', monospace;
     ul {
       padding-left: 24px;
       margin-bottom: 0;
     }
     li {
-      color: $subtle-grey;
+      color: #757575;
     }
   }
   hr {
@@ -304,9 +282,9 @@ export default {
     padding: 8px;
     margin: -8px;
     // margin-bottom: 16px;
-    background: rgba(darken($subtle-white, 4), 1);
+    background: rgba(darken(#fafafa, 4), 1);
     border-radius: 6px;
-    color: darken($subtle-grey, 4);
+    color: darken(#757575, 4);
     position: sticky;
     top: 8px;
     right: 0;
@@ -323,19 +301,19 @@ export default {
   .section-separator {
     height: 1px;
     margin: 16px 8px;
-    background: lighten($subtle-grey, 38);
+    background: lighten(#757575, 38);
   }
   .navigator {
     padding: 16px;
     margin: 8px;
     margin-bottom: 16px;
-    background: $subtle-white;
+    background: #fafafa;
     border-radius: 6px;
-    border: 1px solid lighten($subtle-grey, 42);
+    border: 1px solid lighten(#757575, 42);
     display: inline-block;
     & > span {
       margin-bottom: 8px;
-      font-family: $branding-font;
+      font-family: 'Roboto Mono', monospace;
       display: block;
     }
     button {
@@ -348,7 +326,7 @@ export default {
     .single-menu {
       display: flex;
       justify-content: space-between;
-      font-family: $branding-font;
+      font-family: 'Roboto Mono', monospace;
       margin-bottom: 12px;
       .menu-detail {
         .name {
@@ -358,7 +336,7 @@ export default {
         }
         .people {
           font-size: 12px;
-          color: $subtle-grey;
+          color: #757575;
         }
       }
       .amount {
@@ -381,7 +359,7 @@ export default {
     .single-payer {
       display: flex;
       justify-content: space-between;
-      font-family: $branding-font;
+      font-family: 'Roboto Mono', monospace;
       margin-bottom: 12px;
       &:last-child {
         margin-bottom: 0;
@@ -401,9 +379,9 @@ export default {
         }
         .change {
           font-size: 14px;
-          color: $subtle-grey;
+          color: #757575;
           &.is-important {
-            color: $branding-color;
+            color: #2196F3;
             font-weight: 700;
           }
         }
@@ -421,18 +399,18 @@ export default {
       padding-bottom: 0;
       margin-bottom: 8px;
       border-radius: 6px;
-      border: 1px dashed darken($subtle-white, 8);
+      border: 1px dashed darken(#fafafa, 8);
       background: linear-gradient(90% #fff, #fafafa);
       .group-entries {
         font-size: 14px;
-        font-family: $branding-font;
+        font-family: 'Roboto Mono', monospace;
       }
       .amount-sum {
         font-size: 11px;
-        font-family: $branding-font;
+        font-family: 'Roboto Mono', monospace;
         margin-bottom: 8px;
         span {
-          color: lighten($subtle-grey, 8);
+          color: lighten(#757575, 8);
         }
       }
       .names {
@@ -442,19 +420,19 @@ export default {
         .person-summary {
           font-size: 16px;
           font-weight: 700;
-          font-family: $branding-font;
+          font-family: 'Roboto Mono', monospace;
           min-width: 48px;
           // color: darken($branding-color, 8);
-          border-bottom: 2px solid darken($subtle-white, 8);
+          border-bottom: 2px solid darken(#fafafa, 8);
           display: inline-block;
           padding: 4px 8px;
-          background: darken($subtle-white, 8);
+          background: darken(#fafafa, 8);
           border-radius: 6px 6px 6px 0;
         }
         .pay-to {
-          border-left: 2px solid darken($subtle-white, 8);
+          border-left: 2px solid darken(#fafafa, 8);
           font-size: 14px;
-          font-family: $branding-font;
+          font-family: 'Roboto Mono', monospace;
           padding-left: 6px;
           min-height: 18px;
           line-height: 26px;
@@ -465,7 +443,7 @@ export default {
             content: '';
           }
           .qr-available {
-            border-bottom: 1px solid $subtle-grey;
+            border-bottom: 1px solid #757575;
           }
           .name, .amount {
             font-size: 16px;
@@ -477,12 +455,12 @@ export default {
             display: inline-flex;
             flex-direction: column;
             svg path {
-              color: lighten($subtle-grey, 16);
+              color: lighten(#757575, 16);
             }
           }
         }
         .no-need-to-pay {
-          color: darken($subtle-white, 24);
+          color: darken(#fafafa, 24);
           line-height: 18px;
         }
       }
@@ -493,3 +471,4 @@ export default {
   }
 }
 </style>
+  

@@ -7,21 +7,19 @@
         h2
           span.small Pay To
           br
-          | {{userinfo.name}}
+          | {{userinfo?.name}}
         h2 ฿{{request.amount}}
       h4(v-if="request.note.length > 0") Note: {{request.note}}
-    Promptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
+    ClientOnly: AccountsPromptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
 </template>
 
-<script>
-import Promptpay from '@/components/accounts/Promptpay'
-
-export default {
-  props: ['request', 'userinfo', 'active', 'upsideDown'],
-  components: {
-    Promptpay
-  }
-}
+<script setup>
+defineProps({
+  request: { type: Object, required: true },
+  userinfo: { type: Object, required: true },
+  active: { type: Boolean, required: true },
+  upsideDown: { type: Boolean, default: false }
+});
 </script>
 
 <style lang="scss">
