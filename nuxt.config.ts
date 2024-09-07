@@ -24,7 +24,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: '🤑 Gimme Money - PromptPay QR + Split The Bill',
+      title: 'Gimme Money - PromptPay QR + Split The Bill',
       link: [
         { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' },
         { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' },
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
       meta: [
         { name: 'description', content: 'Local-first PromptPay QR generator, plus, a split-the-bill function that runs locally' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'og:site_name', content: '🤑 Gimme Money' },
+        { name: 'og:site_name', content: 'Gimme Money' },
         { name: 'og:type', content: 'website' },
         { property: 'og:image', content: 'https://gimme.netlify.app/ogimage.png' },
         { property: 'og:image:type', content: 'image/jpeg' },
@@ -45,7 +45,7 @@ export default defineNuxtConfig({
         { property: 'og:image:height', content: '630' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:image', content: 'https://gimme.netlify.app/ogimage.png' },
-        { name: 'apple-mobile-web-app-title', content: '🤑 Gimme Money' },
+        { name: 'apple-mobile-web-app-title', content: 'Gimme Money' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black' },
       ]
