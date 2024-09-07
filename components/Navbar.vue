@@ -15,10 +15,11 @@ export default {
 <style lang="scss">
 .navbar {
   .pusher {
-    height: 56px;
+    height: calc(56px + env(safe-area-inset-bottom, 0px));
   }
   nav {
-    height: 56px;
+    height: calc(56px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     background: white;
     box-shadow: 0 -2px 8px 2px rgba(#000, 0.1);
     position: fixed;

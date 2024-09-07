@@ -1,20 +1,28 @@
 {
-  "name": "Gimme!",
-  "short_name": "Gimme!",
+  "theme_color": "#b6d451",
+  "background_color": "#fafafa",
   "icons": [
     {
-      "src": "./img/icons/android-chrome-192x192.png",
-      "sizes": "192x192",
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon512_maskable.png",
       "type": "image/png"
     },
     {
-      "src": "./img/icons/android-chrome-512x512.png",
+      "purpose": "any",
       "sizes": "512x512",
+      "src": "icon512_rounded.png",
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "orientation": "portrait",
   "display": "standalone",
-  "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF"
+  "dir": "auto",
+  "lang": "en-US",
+  "name": "Gimme Money",
+  "short_name": "Gimme Money",
+  "start_url": "https://gimme.netlify.app/",
+  "scope": "https://gimme.netlify.app/",
+  "description": "Local-first PromptPay QR generator, plus, a split-the-bill function that runs locally",
+  "id": "https://gimme.netlify.app/"
 }

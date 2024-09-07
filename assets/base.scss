@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700');
-
 $branding-font: 'Roboto Mono', monospace;
 $branding-color: #2196F3;
 $subtle-red: #c0392b;
@@ -19,12 +17,14 @@ textarea { resize: none; }
 
 h1, h2, h3, h4, h5, h6, button {
   font-family: $branding-font;
+  @apply font-semibold;
 }
 
 .subtext {
   color: $subtle-grey;
   font-weight: 400;
-  margin-top: 4px;
+  margin-top: 2px;
+  @apply text-sm;
 }
 
 .branding-font {
@@ -111,7 +111,7 @@ button {
 }
 
 .msg {
-  font-size: 14px;
+  @apply text-xs;
   padding: 8px;
   border-radius: 6px;
   background: $subtle-grey;
@@ -301,7 +301,7 @@ button {
     font-family: $branding-font;
     justify-content: flex-end;
     color: $subtle-grey;
-    font-size: 12px;
+    @apply text-xs;
     &.left {
       justify-content: flex-start;
       border-left: 2px solid darken($subtle-white, 8);

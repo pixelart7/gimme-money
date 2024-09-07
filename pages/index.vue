@@ -4,7 +4,7 @@
   .username-row
     h3.username {{store.userinfo.name}}
     button.small.not-important(@click="$router.push('/info')") Edit
-  h2.mt-0 Requesting
+  h2.mt-0.mb-2 Requesting
   form(@submit.prevent="attemptFormSubmit")
     .input
       label Amount

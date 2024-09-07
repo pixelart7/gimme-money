@@ -2,7 +2,7 @@
 #bill-editor.page-region.fit-content
   .top-bar-title(style="opacity: 0.5;")
     h5 {{bill.note}}
-    h6 {{filterDate(bill.datetime.created)}}
+    h6.text-xs.leading-none {{filterDate(bill.datetime.created)}}
   .editor
     button.close-btn.small.not-important(@click="discard()") Discard
     h3.mb-8 {{bill.note}}

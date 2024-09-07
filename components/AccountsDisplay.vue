@@ -4,11 +4,11 @@
   .account-display
     .info
       .first-row
-        h2
-          span.small Pay To
+        h2.text-base
+          span Pay To
           br
-          | {{userinfo?.name}}
-        h2 ฿{{request.amount}}
+          span.text-2xl {{userinfo?.name}}
+        h2.text-xl.mt-0 ฿{{request.amount}}
       h4(v-if="request.note.length > 0") Note: {{request.note}}
     ClientOnly
       AccountsPromptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")

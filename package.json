@@ -10,8 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/google-fonts": "^3.2.0",
     "dayjs-nuxt": "^2.1.11",
     "nuxt": "^3.13.0",
+    "nuxt-gtag": "^3.0.1",
     "promptpay-qr": "^0.5.0",
     "qrcode.vue": "^3.4.1",
     "vue": "latest",

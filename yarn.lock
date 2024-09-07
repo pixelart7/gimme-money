@@ -1234,7 +1234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/kit@npm:3.13.1, @nuxt/kit@npm:^3.11.2, @nuxt/kit@npm:^3.12.3, @nuxt/kit@npm:^3.13.0, @nuxt/kit@npm:^3.7.4":
+"@nuxt/kit@npm:3.13.1, @nuxt/kit@npm:^3.10.3, @nuxt/kit@npm:^3.11.2, @nuxt/kit@npm:^3.12.3, @nuxt/kit@npm:^3.13.0, @nuxt/kit@npm:^3.7.4":
   version: 3.13.1
   resolution: "@nuxt/kit@npm:3.13.1"
   dependencies:
@@ -1349,6 +1349,17 @@ __metadata:
   peerDependencies:
     vue: ^3.3.4
   checksum: 10c0/002ca44bd8075ffd42c89a1246836a4f36dda8ad9cbc090b63216037d43b0afab10a5a75aaa59ecdd071c02e16a975d2e09a6a98ec483a41cf295787ac49053f
+  languageName: node
+  linkType: hard
+
+"@nuxtjs/google-fonts@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@nuxtjs/google-fonts@npm:3.2.0"
+  dependencies:
+    "@nuxt/kit": "npm:^3.10.3"
+    google-fonts-helper: "npm:^3.5.0"
+    pathe: "npm:^1.1.2"
+  checksum: 10c0/bdd4dc825452f9b640da150fb1334e1dd78988b15f565e2bdcb402b5f0565ef9edb0091f0d41f69b32775c621491607efdd80e1911557bf77718f763031d8eb2
   languageName: node
   linkType: hard
 
@@ -3430,7 +3441,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deepmerge@npm:^4.2.2":
+"deepmerge@npm:^4.2.2, deepmerge@npm:^4.3.1":
   version: 4.3.1
   resolution: "deepmerge@npm:4.3.1"
   checksum: 10c0/e53481aaf1aa2c4082b5342be6b6d8ad9dfe387bc92ce197a66dea08bd4265904a087e75e464f14d1347cf2ac8afe1e4c16b266e0561cc5df29382d3c5f80044
@@ -4486,6 +4497,18 @@ __metadata:
     slash: "npm:^5.1.0"
     unicorn-magic: "npm:^0.1.0"
   checksum: 10c0/3f771cd683b8794db1e7ebc8b6b888d43496d93a82aad4e9d974620f578581210b6c5a6e75ea29573ed16a1345222fab6e9b877a8d1ed56eeb147e09f69c6f78
+  languageName: node
+  linkType: hard
+
+"google-fonts-helper@npm:^3.5.0":
+  version: 3.6.0
+  resolution: "google-fonts-helper@npm:3.6.0"
+  dependencies:
+    deepmerge: "npm:^4.3.1"
+    hookable: "npm:^5.5.3"
+    ofetch: "npm:^1.3.4"
+    ufo: "npm:^1.5.3"
+  checksum: 10c0/0c87c0b03546af53317bed18a99271fca472fbbc81230226116d11b159a86810d6b595ad28b6d8933c0d91f679c60b4e93bf57ff57e8200d8e533c82ae5a9a4d
   languageName: node
   linkType: hard
 
@@ -6105,12 +6128,14 @@ __metadata:
   resolution: "nuxt-app@workspace:."
   dependencies:
     "@iconify-json/ph": "npm:^1.2.0"
+    "@nuxtjs/google-fonts": "npm:^3.2.0"
     "@nuxtjs/tailwindcss": "npm:^6.12.1"
     "@vue/language-plugin-pug": "npm:^2.1.6"
     "@vueuse/core": "npm:^11.0.3"
     "@vueuse/nuxt": "npm:^11.0.3"
     dayjs-nuxt: "npm:^2.1.11"
     nuxt: "npm:^3.13.0"
+    nuxt-gtag: "npm:^3.0.1"
     promptpay-qr: "npm:^0.5.0"
     pug: "npm:^3.0.3"
     qrcode.vue: "npm:^3.4.1"
@@ -6120,6 +6145,18 @@ __metadata:
     vue-router: "npm:latest"
   languageName: unknown
   linkType: soft
+
+"nuxt-gtag@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "nuxt-gtag@npm:3.0.1"
+  dependencies:
+    "@nuxt/kit": "npm:^3.13.0"
+    defu: "npm:^6.1.4"
+    pathe: "npm:^1.1.2"
+    ufo: "npm:^1.5.4"
+  checksum: 10c0/8194aa8e9c6cc83d3ab92d7c86977cef12a80b99b768027cd34708813b25026b244dd8d2cdf0d521cb53550a99707095f2dc861cfb70f7dbe55583a03066ed35
+  languageName: node
+  linkType: hard
 
 "nuxt@npm:^3.13.0":
   version: 3.13.1
