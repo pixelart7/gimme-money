@@ -11,7 +11,7 @@
         h2.text-xl.mt-0 ฿{{request.amount}}
       h4(v-if="request.note.length > 0") Note: {{request.note}}
     ClientOnly
-      AccountsPromptpay(:amount="parseFloat(request.amount)", :id="userinfo.promptpay.id")
+      AccountsPromptpay(:amount="parseFloat(request.amount)" :id="userinfo?.promptpay?.id")
 </template>
 
 <script setup>

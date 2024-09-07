@@ -4,8 +4,8 @@
   .flex.items-center.justify-center
     QRCodeVue.qrcode(:value="qrstring", size="320")
   .footer
-    h4.name {{this.id}}
-    h4.amount ฿{{this.amount}}
+    h4.name {{id}}
+    h4.amount ฿{{amount}}
 </template>
 
 <script setup lang="ts">

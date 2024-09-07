@@ -1,6 +1,12 @@
 <template lang="pug">
 #gimme.page-region.fit-content
-  AccountsDisplay(@close="dialog.active = false" :request="store.gimme" :userinfo="store.userinfo" :active="dialog.active" :upsideDown="dialog.upsideDown")
+  AccountsDisplay(
+    @close="dialog.active = false"
+    :request="store.gimme"
+    :userinfo="store.userinfo"
+    :active="dialog.active"
+    :upsideDown="dialog.upsideDown"
+  )
   .username-row
     h3.username {{store.userinfo.name}}
     button.small.not-important(@click="$router.push('/info')") Edit
