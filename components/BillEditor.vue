@@ -318,8 +318,7 @@ const onSubmitReceipt = async (file: File) => {
 
         // Auto-populate the bill with extracted data
         if (parsedData.amount && parsedData.entries) {
-          // Set the total amount
-          bill.value.amount = parsedData.amount
+          bill.value.amount = bill.value.amount + parsedData.amount
 
           // Add entries to the bill
           parsedData.entries.forEach(entry => {
