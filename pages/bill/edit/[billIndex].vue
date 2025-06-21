@@ -31,7 +31,7 @@ const handleSave = (updatedBill) => {
   const updatedBills = [...store.value.bills]
   updatedBills[billIndex] = updatedBill
   store.value.bills = updatedBills
-  router.push(`/bill/view/${billIndex}`)
+  router.replace(`/bill/view/${billIndex}`)
 }
 
 const handleDiscard = () => {
