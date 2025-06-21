@@ -15,7 +15,7 @@
   .input
     label OpenAI API Key (Optional)
     input(type="password" v-model="store.userinfo.openaiKey" autocomplete="off")
-    span.help-text Enable receipt parsing capabilities, speed up your spliting process
+    span.help-text Starts with "sk-". Enable receipt parsing capabilities, speed up your spliting process
 </template>
 
 <script setup lang="ts">
