@@ -11,6 +11,8 @@ export function useStore() {
       promptpay: {
         id: ''
       },
+      openaiKey: '',
+      openaiModel: 'gpt-4.1-mini',
       secondary: []
     },
     gimme: {

@@ -6136,6 +6136,7 @@ __metadata:
     dayjs-nuxt: "npm:^2.1.11"
     nuxt: "npm:^3.13.0"
     nuxt-gtag: "npm:^3.0.1"
+    openai: "npm:^5.6.0"
     promptpay-qr: "npm:^0.5.0"
     pug: "npm:^3.0.3"
     qrcode.vue: "npm:^3.4.1"
@@ -6351,6 +6352,23 @@ __metadata:
     is-docker: "npm:^2.1.1"
     is-wsl: "npm:^2.2.0"
   checksum: 10c0/bb6b3a58401dacdb0aad14360626faf3fb7fba4b77816b373495988b724fb48941cad80c1b65d62bb31a17609b2cd91c41a181602caea597ca80dfbcc27e84c9
+  languageName: node
+  linkType: hard
+
+"openai@npm:^5.6.0":
+  version: 5.6.0
+  resolution: "openai@npm:5.6.0"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.23.8
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10c0/654b461c1dcff73513b0acd1a3a64900847b3693deee48bf0c6abc55b2aed1289f26b29b71718161cf0654490ae4656fda9333e2a01d054336b603f3223768ab
   languageName: node
   linkType: hard
 
